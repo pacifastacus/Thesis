@@ -1,0 +1,30 @@
+Újra kell rakni ezt a rendszert, mert 7.6-ra frissült (Ne használd többet a yum updatet!)
+-cuda 9 verzió kell (a tensorflow l
+
+
+Tensor Flow:
+-Python függő, de a kernel C++ ban van megírva (Az interfész íródott pythonban)
+-
+
+Libxsmm (Tensorflow alá betehető lib)
+	-újrafordítható Xeon Phin
+	-Hibrid módban még nincs
+
+MKL-DNN (Tensorflow Intel Library)
+-CPU optimalizált Neur-háló keretrendszer 
+
+CuDNN (Tensorflow alatt működik)
+Intel Nervana Graph (nGraph)
+-Keresztplatformos keretrendszer
+
+Másik hallgató foglalkozik vele:
+Tiny-dnn
+-függőségmentes deeplearning környezet
+-Korábban végeznek vele, icpc(intel C compiler)-vel lefordul
+	-QOFFLOAD kapcsoló (CPU-n fut, de a Phi kártya besegít bizonyos számításban)
+	-MIC kapcsoló (XEON Phire fordul natív futtatásra)
+
+
+Library dokumentáció: Chaos DeepLearning Xeon Phi Environment (Nem töltehtő le a library se a forrás)
+
+

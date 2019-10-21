@@ -1,0 +1,32 @@
+- Bevezető
+- Neurális hálózatok és a Deep Learning
++ Deep Learning
++ A neurális hálózatok elmélete
++ függvények, algoritmusok
+
+- Mélytanulásos alkalmazások fejlesztése
++ Keras
++ Tensorflow
+
+- Specializált hardver (vagy Célprocesszorok) megjelenése
++ Myriad X és az Intel Neural Compute Stick 2
++ Új gyorsítók: Intel Nervana Neural Network Processor
+
+László ajánlása
+
+- Bevezető
+- Neurális hálózatok és a Deep Learning
++  Deep Learning
++  A neurális hálózatok elmélete
++  függvények, algoritmusok
+
+- Mélytanulásos alkalmazások fejlesztése
++  Keras
++  Tensorflow
+
+- Specializált/hibrid  architektúrák megjelenése
++ hybrid deep learning
++ nGraph
++ Myriad X és az Intel Neural Compute Stick 2
++ Új gyorsítók: Intel Nervana Neural Network Processor
+
