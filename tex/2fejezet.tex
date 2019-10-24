@@ -1,8 +1,64 @@
 %-------------------------------------------------------------------------------
-\chapter{Mélytanulásos alkalmazások fejlesztése}
+\chapter{Mély tanuló alkalmazások fejlesztése}
 %-------------------------------------------------------------------------------
 % TODO: Mélytanulásos keretrendszerek bemutatása általánosságban (mire jók, stb...)
-\section{Keras}
-Keras Keras Keras Keras Keras 
+A mély tanulás, azon belül is a mesterséges neurális hálózatok gyors fejlődősét és részben népszerűségét a hozzá készített programozási keretrendszereknek köszönheti, melyek java szabad hozzáférésű. Ezek a keretrendszerek arra hivatottak, hogy támogassák a neurális hálózatok fejlesztését új programozási módszertant adva. Már létező programozási nyelvekre épülnek, leginkább python-ra. Ezekben a keretrendszerekben egyszerűen implementálhatunk neurális hálózatokat úgy, hogy egyfajta nyelvi eszközkészletet adnak a hálózat definiálására.
+
 \section{TensorFlow}
 
+%TODO Nincs Befejezve
+\section{Keras}
+
+A Keras egy python nyelven írt programkönyvtár, vagy ahogy önmagát hívja ''magas szintű neurális hálózat API''\cite{web:Keras}. Érdekessége, hogy más olyan keretrendszerekkel együttesen használható, amelyek a Keras-hoz hasonlóan magas absztrakciós szinten biztosítják a hálózatok implementálását, mint például a TensorFlow. A Keras-ról szerzett tudásom javát Chollet könyvéből és a keretrendszer dokumentációjából szereztem.\cite{Chollet}\cite{web:Keras}.
+
+\subsection{Neurális hálózat definiálása}
+
+Keras-ban egy neurális hálózatot \emph{model}-nek hívunk (gyakran máshol is így neveznek egy konkrét neurális hálózatot). Egy \emph{model} létrehozásához a \verb|Keras.models| modulban definiált metódusokkal lehetséges. A keretrendszerben az adatokat tenzorokként kell reprezentálnunk, ezért érdemes a \emph{numpy}\footnote{lásd:\url{https://numpy.org/}} nevű python csomaggal együtt használni. A következő kódokban szeretném szemléltetni a Keras használatának módját.
+
+A \ref{lst:defLayers} kódlista egy két rétegből álló neurális hálózat definiálását mutatja be.
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption=Két Neurális hálózat rétegeinek definiálása]
+from keras import models
+from keras import layers
+
+network = models.Sequential()
+network.add(layers.Dense(32, activation='relu', input_shape=(784,)))
+network.add(layers.Dense(10, activation='softmax'))
+\end{lstlisting}\label{lst:defLayers}
+\end{minipage}
+Ezen lista 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz. A Keras-ban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy sűrűn kapcsolt réteget implementál. %TODO sürün kapcsolt réteg definíciója
+A réteg bemenetként $28 *28 = 784$ elemű vektorokból álló mátrixot tud fogadni, másik dimenziója nem meghatározott. Ez a kötegelt adatfeldolgozás szempontjából fontos, tehát a bemeneti vektorok sorozatát egy pontosan egy dimenziójában tetszőleges mátrixszal definiáljuk. A réteg kimenete egy 32 dimenziós vektor. A következő rétegnél nem adtuk meg a bemenet méretét, a keretrendszerben ez implicit módon rendelődik a réteghez. 
+
+Mindkét réteghez tartozik egy \emph{activation} paraméter, mely string típus kell legyen, és a réteg neuronjaihoz tartozó aktivációs függvényt adja meg. A példában a \verb|'relu'| string a $ReLu(x) = max\{0,x\}$ függvényt jelenti, a \verb|'softmax'|, pedig egy eloszlásfüggvény, a kimeneti vektoron. %TODO softmax ponhtosítása
+
+A \verb|Keras.layers| modulban A \verb|Dense| osztályon kívül implementálva vannak konvolúciós, összefésülő, zaj, stb. rétegek, melyek a fenti módon tetszés szerint egymásra szervezhetőek a keretrendszerben, így szinte tetszőleges hálózat alakítható ki.
+
+\subsection{Hálózat betanítása és következtetés futtatása}
+
+A megalkotott hálózatot a \verb|network| objektum definiálja. Hogy tanítható legyen el kell látni egy optimizálóval és egy veszteségfüggvénnyel, melyek együtt adják a hálózatot betanító algoritmust. A \verb|compile()| metódus ,,összerakja'' a hálózatot a betanítóval, a \verb|fit()| pedig elvégzi a tanítást, és au \emph{epoch}-ok számának megfelelő méretű tömböket tartalmazó objektum referenciájával tér vissza, mely tömbökben össze vannak gyűjtve a veszteségfüggvény értékei és a felhasználói metrikák. 
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python,caption=Hálózat betanítása]
+network.compile(optimizer = 'rmsprop',
+loss = 'binary_crossentropy',
+metrics = ['acc'])
+
+history = network.fit(train_datas,
+					train_labels,
+					epochs=20,
+					batch_size=512)
+\end{lstlisting}\label{lst:fitNetwork}
+\end{minipage}
+
+A \verb|train_datas| és \verb|train_labels| a betanító adatokat és azok címkéit tartalmazó tömbök. Ezek elemszáma kötelezően meg kell egyezzen. A \emph{batch\_size} paraméter az egy \emph{epoch}-ban egyszerre feldolgozandó adatokat jelenti. A betanítás végén a \verb|network| egy \emph{betanított}, a célfeladat megoldására felhasználható neurális hálózat lesz. Alkalmazásához a \verb|predict()|metódus használatos,mely a paraméterként megadott adatokhoz tartozó valószínűség értékekkel tér vissza.
+%TODO 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption=Következtetés]
+	result = network.predict(datas)
+\end{lstlisting}
+\end{minipage}
+
+\subsection{Hatékonyságvizsgálat}
+
+
+%TODO Nincs Befejezve

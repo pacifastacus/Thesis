@@ -1,25 +1,24 @@
 %-------------------------------------------------------------------------------
-\chapter{Specializált hardver megjelenése}%{Célprocesszorok megjelenése}
+\chapter{Speciális platformok megjelenése}
 %-------------------------------------------------------------------------------
 \section{hybrid deep learning}
 A ha
 
 \section{nGraph}
 A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
-Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet 
-melyet mélytanulásos projektekhez.
+Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez.
 Legszembetűnőbb tulajdonsága, hogy képes többféle hardver architektúrán futtatni és beépíthető számos keretrendszerbe.
-Ezek azok a jellemzők, amiket kerestünk témavezetőmmel, hogy mélytanulást tudjunk végeztetni hatékonyan a \emph{HuSSar-on}. 
+Ezek azok a jellemzők, amiket kerestünk témavezetőmmel, hogy mély tanulást tudjunk végeztetni hatékonyan a \emph{HuSSar-on}. 
 Ezen túlmenően a jövőbeli fejlesztések az iparban egyre jelentősebben igényelik, hogy a modern MI rendszerek skálázhatóak legyenek, mert egyrészt a neurális hálók egyre komplexebbé válnak, másrészt az általuk feldolgozott adatok mennyisége is rohamosan növekszik.
 
-Jelenleg két bevett gyakorlat van a mélytanulás felgyorsítására:
+Jelenleg két bevett gyakorlat van a mély tanulás felgyorsítására:
 \begin{enumerate}
-	\item \textbf{Dedikált hardver tervezése a mélytanulásos számításokhoz} -- Sok vállalkozás tervez \emph{Alkalmazásspecifikus integrált áramköröket} (ASIC) neurális hálózatok betanítására és futtatására.
+	\item \textbf{Dedikált hardver tervezése a mély tanulással kapcsolatos számításokhoz} -- Sok vállalkozás tervez \emph{Alkalmazásspecifikus integrált áramköröket} (ASIC) neurális hálózatok betanítására és futtatására.
 	\item \textbf{Szoftver optimalizáció} -- Programkönyvtárakat tartalmazó fejlesztési keretrendszerek fejlesztése, melyek képesek a hálózatokkal kapcsolatos számításokat több szálon, optimalizáltan futtatni. Az nGraph, mint fordító is egy ilyen megoldás.
 \end{enumerate}
 
 \subsection{Motiváció}
-A mai legmodernebb szoftveres megoldás mélytanulásra az, ha integrálunk kernel könyvtárakat\footnote{Programkönyvtár, mely neurális hálókkal kapcsolatos elemi, \emph{mag} függvényeket tartalmazzák} mélytanulásos keretrendszerekbe.
+A mai legmodernebb szoftveres megoldás mély tanulásra az, ha integrálunk kernel könyvtárakat\footnote{Programkönyvtár, mely neurális hálókkal kapcsolatos elemi, \emph{mag} függvényeket tartalmazzák} mély tanulási keretrendszerekbe.
 Ilyen integráció lehet például ha a Tensorflow keretrendszer alatt az Nvidia CuDNN könyvtárát használjuk.
 A {kernel könyvtárak} egy adott célarchitektúrára optimalizált kernelekből és egyéb műveleti szintű optimalizálásokból állnak, ezekkel érve el teljesítménynövekedést.
 Azonban a kernel könyvtáraknak három fő problémája van:
@@ -30,7 +29,7 @@ Azonban a kernel könyvtáraknak három fő problémája van:
 \end{enumerate}
 Az nGraph fordító megoldás az első két problémára, és a \emph{PlaidML}-el ötvözve kiküszöbölhető a harmadik probléma.
 \subsection{Gráf szintű optimalizálás}
-Az nGraph dokumentációjában áll egy példa arra vonatkozóan, hogyan lehet, hogy egy mélytanulásos keretrendszer integrálva egy {kernel könyvtárral} a számításokat optimálisan végzi, mégis a számítási gráf a csúcsait alkotó műveletek szempontjából mégsem optimális.
+Az nGraph dokumentációjában áll egy példa arra vonatkozóan, hogyan lehet, hogy egy mély tanulási keretrendszer integrálva egy {kernel könyvtárral} a számításokat optimálisan végzi, mégis a számítási gráf a csúcsait alkotó műveletek szempontjából mégsem optimális.
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.9\textwidth]{kernel-problem-1.png}
@@ -43,16 +42,16 @@ Fordítási időben megállapítható, hogy $B$ egy skalár konstans, így a \em
 Ebben a példában $B=0$ skalár volt, így a belőle létrejött tenzor egy nullmátrix, így az semleges a kifejezés kiértékelésének szempontjából.
 \emph{Algebrai egyszerűsítést} végezve az $ (A+0)*C $ leegyszerűsíthető az $A*C$ kifejezésre, így összesen két csúccsal csökkentettük a gráfunkat.
 Ez az optimalizáció tehát a számítási gráf szintjén lett elvégezve.
-Így belátható, hogy a mélytanulásos keretrendszerbe integrált kernel programkönyvtárak nem optimális futást végeznek, hiába a műveletek szintjén elért optimalizálás. 
+Így belátható, hogy a mély tanulási keretrendszerbe integrált kernel programkönyvtárak nem optimális futást végeznek, hiába a műveletek szintjén elért optimalizálás. 
 \subsection{Skálázható keretrendszer integráció}
-Ahogy gyarapodik a mélytanuláshoz használható gyorsítókártya architektúrák és keretrendszerek száma, a meglévő mélytanulást alkalmazó fejlesztési platformok bővítése egyre több munkát igényel és egyre nő a hibák megjelenésének a valószínűsége. Az integráció kapható készen, szakértő fejlesztőcsapatoknak kell implementálnia.
+Ahogy gyarapodik a mély tanuláshoz használható gyorsítókártya architektúrák és keretrendszerek száma, a meglévő mély tanulást alkalmazó fejlesztési platformok bővítése egyre több munkát igényel és egyre nő a hibák megjelenésének a valószínűsége. Az integráció kapható készen, szakértő fejlesztőcsapatoknak kell implementálnia.
 Minden új keretrendszert manuálisan kell integrálni a meglévő hardverek kernel könyvtárával és minden újonnan megjelenő hardvercsalád meghajtó programkönyvtárát be kell integrálni egyesével a meglévő keretrendszerekbe.
 Ez a munka önmagában is hatalmasra tud nőni, de egy sok eszközből álló összeállítás nagyon törékeny és költséges a fenntartása.
-Az nGraph úgy oldja meg ezt a problémát, hogy ún. \emph{hidakat} alkalmaz, amikkel integrálható valamelyik mélytanulásos keretrendszerbe.
+Az nGraph úgy oldja meg ezt a problémát, hogy ún. \emph{hidakat} alkalmaz, amikkel integrálható valamelyik mély tanulási keretrendszerbe.
 A híd megkapja a keretrendszerben megalkotott számítási gráfot vagy ahhoz hasonló struktúrát és átalakítja egy ún. \emph{közbenső reprezentációvá}\footnote{IR: Intermediate Representation}. Ezzel kaptunk egy egységes, platformfüggetlen számítási gráfot, így nem kell egy új programkönyvtárat beintegrálni minden egyes meglévő keretrendszer alá, elegendő csak az, hogy az nGraph-ban, mint programkönyvtárban implementált \emph{primitív műveleteket} támogassa az új programkönyvtár.
 \subsection{Növekvő kernel szám}
-Egy kernel könyvtár integrálása egyszerre több mélytanulásos keretrendszerrel nehéz feladat és egyre komplexebbé válik, ahogy növekszik az optimális teljesítményhez szükséges kernelek száma.
-Régen a mélytanulásos kutatások egy kis számú \emph{primitív} számítást használtak, mint a konvolúció, általános mátrixszorzás, stb. Az MI kutatás előrehaladtával és az ipari mélytanulásos alkalmazások továbbfejlesztésével, a szükséges kernelek száma (k) exponenciálisan nő.
+Egy kernel könyvtár integrálása egyszerre több mély tanulási keretrendszerrel nehéz feladat és egyre komplexebbé válik, ahogy növekszik az optimális teljesítményhez szükséges kernelek száma.
+Régen a mély tanulással kapcsolatos kutatások egy kis számú \emph{primitív} számítást használtak, mint a konvolúció, általános mátrixszorzás, stb. Az MI kutatás előrehaladtával és az ipari mély tanuló alkalmazások továbbfejlesztésével, a szükséges kernelek száma (k) exponenciálisan nő.
 Ez a szám a processzor architektúrák számán (h), adattípusokon (t), műveleteken (p) és az egyes paraméterek számosságán (p) alapul ($ k = h \times t \times m \times p $).
 \begin{table}[!ht]
 	\centering
@@ -83,7 +82,20 @@ Az nGraph gráf szintű optimalizációját ráadásul kiegészíti automatikusa
 
 \section{Myriad X és az Intel Neural Computer Stick 2}
 
-\section{Google ???}
+%Motiváció: Valós idejű alkalmazások esetén szükséges az offline számítás -> GPU - lehetséges, de erőforrás igényes(áram és hűtés) és nagy méretű 
+
+%TODO Nincs Befejezve
+
+\section{Google Edge TPU}
+Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejlesztő panelt, mély tanulást alkalmazó projektekhez. A Google Edge TPU-ról és a Coral USB Accelerator-ról a Heartbeat internetes magazinban megjelent cikkben értesültem.\cite{web:GoogleEdge}
+
+Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzort és az Intel Neural Compute Stick 2. A valós idejű mély tanuló alkalmazások igénylik az offline módon történő számítást kis fogyasztás mellett.
+Az Intel-től eltérően a Google ún. Tensor Processing Unit-ot, egy saját fejlesztésű gyorsítókártyát használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezeket a társprocesszor kártyákat a Google a saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a mátrix szorzás, konvolúció és az aktváló függvények alkalmazása az \ref{section:neuralNetworkTheory} alfejezetben tárgyalt módon. 
+
+Az Edge TPU már egy alkalmazásspecifikus integrált áramkör más néven ASIC.
+%TODO Nincs Befejezve
 
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
+
+%TODO Nincs Befejezve

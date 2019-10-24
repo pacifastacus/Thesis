@@ -5,20 +5,23 @@ Ebben a fejezetben szeretném összegezni megszerzett tudásomat a neurális há
 \section{A neurális hálózatok elmélete}
 \label{section:neuralNetworkTheory}
 % TODO ezt a bekezdést még dolgozd át!
-%Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}
+Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}
 
 A mesterséges neurális hálózatok egy viszonylag egyszerű modellen alapulnak. Minden neuron a hozzá kapcsolódó neuronok ingereinek összessége alapján ingerli a többi neuront melyekhez ő kapcsolódik, ekképpen az ingerület egy irányba halad a kapcsolatok mentén.
 
 Hogy a hálózat áttekinthető legyen, rendezzük a neuronokat rétegekbe úgy, hogy egy réteg neuronjai az ingerületet a közvetlen felső réteg neuronjaitól kapja, és a válasz ingert a közvetlenül alatta lévő réteg neuronjainak továbbítja.
-\begin{figure}
+
+\begin{figure}[h]
 	\centering
 %	\includegraphics[width=0.9\textwidth]{Colored_neural_network.svg}
-	\def\svgwidth{0.5\columnwidth}
+	\def\svgwidth{0.2\columnwidth}
 	\input{fig/Colored_neural_network.pdf_tex}
 	\caption{neurális hálózat réteges szerkezete \protect \footnotemark}
 	\label{fig:neuralNet}
 \end{figure}
+
 \footnotetext{forrás: https://en.wikipedia.org/wiki/Artificial\_neural\_network}
+
 A \ref{fig:neuralNet} ábrán a csúcsok jelentik a neuronokat és az élek a szinapszisok, melyeken az ingerület vándorol. Egy hálózat 3 nagyobb részre tagolódik:
 \begin{enumerate*}[label={\alph*)},font=\bfseries]
 	\item bemeneti réteg
@@ -56,7 +59,7 @@ A gépi taunlás egy teljesen más programozási paradigmát jelent, ugyanis a k
 A Deep Learning más néven a mély tanulás a gépi tanulás egy fajtája. Chollet szerint a név arra utal, hogy a kezdeti adaton több transzformációt végrehajtva egymás után egyre közelebb kerülünk egy olyan reprezentációhoz, ami megfelel a kívánalmainknak. Ezzel kontrasztban beszélhetünk sekély tanulásról, amikor kevés, egy vagy két transzformáció után kapjuk meg az adat megfelelő reprezentációját.%\cite{Chollet}
 A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulásban. Eredeti elgondolás szerint minden egyes neuron-réteg egyre összetettebb tulajdonságokat ismer fel a bemeneti adatból. Valójában a rétegenkénti transzformációk egyre kisebb összetettségű hipotézis térbe visznek át, a reprezentáció egyre kevesebb a felhasználó számára fölösleges információt tartalmaz. Minél több a réteg a hálózatban, annál \emph{mélyebb} a modell.
 
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.8\columnwidth]{fig/digit_classification.png}
 	\caption{Írott szám hozzárendelése az ábrázolt számértékhez}
@@ -65,7 +68,7 @@ A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulá
 \end{figure}
 \footnotetext{Forrás:\protect\cite{Chollet}}
 
-Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{section:neuralNetworkTheory} szakaszban kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $W$ mátrixok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok változóinak száma hatalamas lehet ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk---, tehát beállításukhoz valamilyen algoritmusra van szükség.
+Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{section:neuralNetworkTheory} alfejezetben kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $W$ mátrixok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok változóinak száma hatalamas lehet ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk---, tehát beállításukhoz valamilyen algoritmusra van szükség.
 Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Négy  megközelítés létezik, amikor gépi tanulásról van szó.
 \emph{Ellenőrzött tanulás} során a neurális hálózatnak felcímkézett adatokat adunk meg, tehát olyan értéket rendelünk hozzájuk, amilyet szeretnénk, hogy a hálózat produkáljon. A hálózat leképezi az adatot a meghatározott reprezentációvá. A tanuló algoritmus ebből és a címkéből egy \emph{veszteség függvény} kiszámításával meghatározza, hogy mekkora az eltérés, a valamilyen értelemben vett távolság a kapott és az elvárt eredmény között. Ez alapján frissíti a $W$ mátrixokat és $\vec{b}$ vektorokat.
 \emph{Ellenőrizetlen tanulás}, mely során az adatokat nem címkézzük fel, hanem arra vagyunk kíváncsiak, hogy miféle összefüggések vannak közöttük. Ezt a módszert adatbányászat során alkalmazzák. 
@@ -75,10 +78,16 @@ Vizsgálódásomat az \emph{ellenőrzött tanulásra} korlátoztam, így a tová
 
 \section{Függvények, algoritmusok}
 
+%TODO Nincs Befejezve
 \subsection{Neuronok aktivációs függvényei}
 
+%TODO Nincs Befejezve
 \subsection{Veszteség függvények}
 
-\subsection{,,Backpropagation'' algoritmus}
+%TODO Nincs Befejezve
+\subsection{A hálózat tanító algoritmusai}
 
+%TODO Nincs Befejezve
 \subsection{A kernel-trükk}
+
+%TODO Nincs Befejezve

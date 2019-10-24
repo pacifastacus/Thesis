@@ -8,7 +8,7 @@
 \usepackage{amssymb}
 \usepackage[magyar]{babel}
 \usepackage{listings}
-%\usepackage{color}
+\usepackage{xcolor}
 \usepackage[pdftex]{graphicx}
 \usepackage{setspace}
 \usepackage[nottoc]{tocbibind}
@@ -32,15 +32,21 @@
 \widowpenalty=30000
 \clubpenalty=30000
 
+%kódlisták stílusa
 \lstset{
-	basicstyle=\small\ttfamily,
+	basicstyle=\small,
+	keywordstyle=\bfseries,
+	identifierstyle=,
+	commentstyle=\color{gray},
 	frame=l,
 	xleftmargin=\parindent,
 	tabsize=2,
 	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
 	breaklines=true,
 	breakatwhitespace=true,
-	escapeinside={@}{@} % pl. kódrészlet kiemeléséhez
+	escapeinside={@}{@}, % pl. kódrészlet kiemeléséhez
+	frame=single, 
+	numbers=left
 }
 
 %\setmainfont{Times New Roman}	%Times New Roman betűtípus (fontspec csomag!)
