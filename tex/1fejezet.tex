@@ -2,6 +2,7 @@
 \chapter{Neurális hálózatok és a Deep Learning}
 %-------------------------------------------------------------------------------
 Ebben a fejezetben szeretném összegezni megszerzett tudásomat a neurális hálózatokról és a Deep Learning-ről, magyarul mély tanulásról. 
+
 \section{A neurális hálózatok elmélete}
 \label{section:neuralNetworkTheory}
 % TODO ezt a bekezdést még dolgozd át!
@@ -35,7 +36,7 @@ Egy neuronban két művelet történik: a bementek összegzése és egy aktivál
 \end{equation}
 ahol $x_i$ a felső réteg i.-ik neuronjának kimenete, $w_i$ az i.-ik neuron szinapszisához tartozó súly, mellyel a szinapszis "erősségét" határozzuk meg. Az "s" összeghez hozzáadunk még egy $b$ értéket, a neuron aktiválási küszöbértéke lesz.
 Az aktivációs függvény adja a neurális hálózat kimenetét, paramétere $s+b$.
-A neurális hálózatok fejlesztésekor sokféle függvényt találtak alkalmasnak aktivációs függvény gyanánt. Közös jellemzőjük, hogy inflexiós pontjuk $x=0$ helyen van, illetve 0-ban nem deriválható függvények esetén a töréspont esik ide. Leggyakoribbak talán az egységugrás, a $\tanh(x)$, az ún. ReLU vagyis a $\max\{0,x\}$, szigmoid ($\sigma(x)= \frac{1}{1+e^{-x}}$) és a \emph{softmax} függvények. Utóbbi kettőt az utolsó neuron réteg neuronjainak aktivációs függvényként szokták választani.
+A neurális hálózatok fejlesztésekor sokféle függvényt találtak alkalmasnak aktivációs függvény gyanánt. Közös jellemzőjük, hogy inflexiós pontjuk $x=0$ helyen van, illetve 0-ban nem deriválható függvények esetén a töréspont esik ide.
 
 A szemléletesség kedvéért tekintsünk meg az egyrétegű perceptront, vagyis egy egyetlen rétegből álló neurális hálózatot $k$ darab neuronnal. A bemenet legyen az $\vec{x}=(x_1,\dots,x_n)$ vektor (a gyakorlatban bemeneti rétegként szokták hívni). A szinapszisok súlyait a $W=\{w_{ij}:i=1\dots n,j=1\dots k\}$  mátrix ($\vec{w}_i$ az i. bemeneti adatból kiinduló szinapszisokhoz tartozó súlyok vektora lesz), a neuronok küszöbértékeit a $\vec{b}=(b_1,\dots,b_k)$ vektor tartalmazza. Az aktivációs függvény $f$. A hálózat kimenetét, vagyis a  $\vec{y}=(y_1,\dots,y_k)$ vektor elemeit megkapjuk a következőképpen:
 \begin{equation}
@@ -77,10 +78,39 @@ Az \emph{Önellenőrzött tanulás} hasonló az ellenőrzötthöz, azonban az ad
 Vizsgálódásomat az \emph{ellenőrzött tanulásra} korlátoztam, így a továbbiakban ennek tükrében folytatom dolgozatomat.
 
 \section{Függvények, algoritmusok}
-
-%TODO Nincs Befejezve
+Az alábbiakban szeretném megfogalmazni a neurális hálózatokban alkalmazott tipikus függvényeket és algoritmusokat
+%TODO Kicsit rövid
 \subsection{Neuronok aktivációs függvényei}
+Mint korábban kifejtettem minden neuron kimenete egy függvény kiértékelése, melynek paramétere a bemenetek súlyozott összege. Ezt a függvényt hívjuk aktivációs függvénynek. 
 
+\paragraph{A szigmoid függvény}
+Az utolsó, kimeneti neuronok rétegének aktivációs függvényeként alkalmazzuk, ahol a várt eredmény egyetlen valószínűségi érték. Ez bináris osztályozási problémák esetén alkalmazandó, tehát a program célja, hogy egy bemeneti adatról eldöntse, hogy az egy bizonyos kategóriába esik-e vagy sem, illetve erről mekkora "magabiztossággal" döntött.
+\begin{equation}
+	\sigma(x)= \frac{1}{1+e^{-x}}
+\end{equation}
+
+\paragraph{A softmax függvény} 
+A kimeneti réteg aktivációs függvénye. K elemű szám n-esek halmazába képez, mely n-esek elemei egy valószínűségi eloszlás értékeit adják, tehát összegük 1. Éppen ezért Többosztályos problémáknál érdemes használni úgy, hogy a kimenet elemei rendre megadják, hogy a bemeneti minta mekkora valószínűséggel esik az osztályok valamelyikébe.
+
+\paragraph{ReLu}
+Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpafüggvény a rejtett neuron rétegek aktivációs értéke szokott lenni.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.3\textwidth}
+		\def\svgwidth{0.5\columnwidth}
+		\input{fig/Logistic-curve.pdf_tex}
+		\caption{Szigmoid függvény}
+		\label{fig:sigmoid}
+	\end{subfigure}
+	~
+	\begin{subfigure}[b]{0.3\textwidth}
+		\def\svgwidth{0.5\columnwidth}
+		\input{fig/Ramp_function.pdf_tex}
+		\caption{ReLu függvény}
+	\end{subfigure}
+	\caption{Aktivációs függvények }
+\end{figure}
 %TODO Nincs Befejezve
 \subsection{Veszteség függvények}
 
