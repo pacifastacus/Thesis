@@ -1,10 +1,10 @@
 %-------------------------------------------------------------------------------
-\chapter{Neurális hálózatok és a Deep Learning}
+\chapter{Neurális hálózatok és a Deep Learning}\label{chap:neuralis-halozatok-es-a-deep-learning}
 %-------------------------------------------------------------------------------
 Ebben a fejezetben szeretném összegezni megszerzett tudásomat a neurális hálózatokról és a Deep Learning-ről, magyarul mély tanulásról. 
 
 \section{A neurális hálózatok elmélete}
-\label{section:neuralNetworkTheory}
+\label{sect:neuralNetworkTheory}
 % TODO ezt a bekezdést még dolgozd át!
 Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}
 
@@ -50,7 +50,8 @@ A fentiekből látszik, hogy a hálózat tervezésénél annak négy tulajdonsá
 	\item a szinapszisok súlyát ($W$)
 	\item a neuronok aktiválási küszöbét ($\vec{b}$).
 \end{enumerate*}
-Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni. Ez nagyon sok külön meghatározandó változót jelent, tehát csak az 1. és 2. tulajdonság meghatározása elvárható. Kell egy algoritmus, mellyel $w$ és $b$ paraméterek sokasága meghatározható. %Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Kétféle megközelítés létezik, amikor gépi tanulásról van szó. Ellenőrzött tanulás során a neurális hálózatnak felcímkézett adatokat adunk meg, tehát olyan értéket rendelünk hozzájuk, amilyet szeretnénk, hogy a hálózat produkáljon
+Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni. Ez nagyon sok külön meghatározandó változót jelent, tehát csak az 1. és 2. tulajdonság meghatározása elvárható. Kell egy algoritmus, mellyel $w$ és $b$ paraméterek sokasága meghatározható.
+
 
 \section{Deep Learning}
 A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{Chollet} szereztem, melynek a témához kapcsolódó részleteit alább bemutatom.
@@ -69,15 +70,21 @@ A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulá
 \end{figure}
 \footnotetext{Forrás:\protect\cite{Chollet}}
 
-Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{section:neuralNetworkTheory} alfejezetben kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $W$ mátrixok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok változóinak száma hatalamas lehet ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk---, tehát beállításukhoz valamilyen algoritmusra van szükség.
-Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Négy  megközelítés létezik, amikor gépi tanulásról van szó.
+Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{sect:neuralNetworkTheory} alfejezetben kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $W$ mátrixok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok változóinak száma hatalmas lehet, ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk--- tehát beállításukhoz valamilyen algoritmusra van szükség. Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Négy  megközelítés létezik, amikor gépi tanulásról van szó.
+
 \emph{Ellenőrzött tanulás} során a neurális hálózatnak felcímkézett adatokat adunk meg, tehát olyan értéket rendelünk hozzájuk, amilyet szeretnénk, hogy a hálózat produkáljon. A hálózat leképezi az adatot a meghatározott reprezentációvá. A tanuló algoritmus ebből és a címkéből egy \emph{veszteség függvény} kiszámításával meghatározza, hogy mekkora az eltérés, a valamilyen értelemben vett távolság a kapott és az elvárt eredmény között. Ez alapján frissíti a $W$ mátrixokat és $\vec{b}$ vektorokat.
+
 \emph{Ellenőrizetlen tanulás}, mely során az adatokat nem címkézzük fel, hanem arra vagyunk kíváncsiak, hogy miféle összefüggések vannak közöttük. Ezt a módszert adatbányászat során alkalmazzák. 
-Az \emph{Önellenőrzött tanulás} hasonló az ellenőrzötthöz, azonban az adatok felcímkézését nem emberi erővel végezzük, hanem az adatokból állítjuk elő valamilyen heurisztikát felhasználva. Egyik alakalmazási területe az autóenkóderek tanítása.
-\emph{Megerősítéses tanulás} egy újfajta megközelítése a neurális hálózatok alkalmazásának. Ennél a metodikánál a hálózatot egy ágens alkalmazza, így a hálózat bemenete az ágens által megfigyelt környezet a kimenete pedig valamilyen cselekedet, beavatkozás és tanítás során az ágens igyekszik valamilyen környezetbeli értéket maximalizálni. Gyakori alkalmazás valamilyen játékot játszó ágens, ahol azt tanulja, adott helyzetekre milyen reakcióval tudja maximalizálni játékbeli pontszmát.
+
+Az \emph{Önellenőrzött tanulás} hasonló az ellenőrzötthöz, azonban az adatok felcímkézését nem emberi erővel végezzük, hanem az adatokból állítjuk elő valamilyen heurisztikát felhasználva. Egyik alkalmazási területe az autóenkóderek tanítása.
+
+A \emph{Megerősítéses tanulás} egy újfajta megközelítése a neurális hálózatok alkalmazásának. Ennél a metodikánál a hálózatot egy ágens alkalmazza, így a hálózat bemenete az ágens által megfigyelt környezet a kimenete pedig valamilyen cselekedet, beavatkozás és tanítás során az ágens igyekszik valamilyen környezetbeli értéket maximalizálni. Gyakori alkalmazás valamilyen játékot játszó ágens, ahol azt tanulja, adott helyzetekre milyen reakcióval tudja maximalizálni játékbeli pontszámát.
 Vizsgálódásomat az \emph{ellenőrzött tanulásra} korlátoztam, így a továbbiakban ennek tükrében folytatom dolgozatomat.
 
-\section{Függvények, algoritmusok}
+\section{Függvények, algoritmusok}\label{sec:fuggvenyek-algoritmusok}
+Az előbbieket összefoglalva tehát a gyakran hangoztatott mély neurális hálózatok a mesterséges neurális hálózatok felhasználása gépi tanulásra.
+
+
 Az alábbiakban szeretném megfogalmazni a neurális hálózatokban alkalmazott tipikus függvényeket és algoritmusokat.
 %TODO Kicsit rövid
 \subsection{Neuronok aktivációs függvényei}
@@ -85,16 +92,17 @@ Mint korábban kifejtettem minden neuron kimenete egy függvény kiértékelése
 
 \paragraph{A szigmoid függvény}
 Az utolsó, kimeneti neuronok rétegének aktivációs függvényeként alkalmazzuk, ahol a várt eredmény egyetlen valószínűségi érték. Ez bináris osztályozási problémák esetén alkalmazandó, tehát a program célja, hogy egy bemeneti adatról eldöntse, hogy az egy bizonyos kategóriába esik-e vagy sem, illetve erről mekkora "magabiztossággal" döntött.
-\begin{displaymath}
+\begin{equation}
 	\sigma(x)= \frac{1}{1+e^{-x}}
-\end{displaymath}
+	\label{eq:sigmoid}
+\end{equation}\
 
-
-\paragraph{A softmax függvény} 
+\paragraph{A softmax függvény}
 A kimeneti réteg aktivációs függvénye. $D$ dimenziójú $z$ vektorok koordinátáit normalizálja, másként fogalmazva egy tetszőleges $D$ elemű szám n-est azon $D$ elemű n-esek halmazába képezi, melyek elemeinek összege 1. Így tehát a $z$ koordinátái egy diszkrét valószínűségi eloszlás értékkészlete. 
-\begin{displaymath}
+\begin{equation}
 \sigma(z_i)=\frac{e^{z_i}}{\sum_{j=1}^{D}},\quad i = 1,\dots,D
-\end{displaymath}
+\label{eq:softmax}
+\end{equation}
 Éppen ezért Többosztályos problémáknál érdemes használni úgy, hogy a kimenet elemei rendre megadják, hogy a bemeneti minta mekkora valószínűséggel esik az osztályok valamelyikébe.
 
 
@@ -102,8 +110,8 @@ A kimeneti réteg aktivációs függvénye. $D$ dimenziójú $z$ vektorok koordi
 Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpafüggvény a rejtett neuron rétegek aktivációs értéke szokott lenni. Először 2011-ben mutatták be, hogy hatékonyabban taníthatóak a neurális hálózatok, mintha csak szigmoid függvényt használnánk neuronok aktivációs függvényeként.\cite{wiki:relu}
 \begin{equation}
 	f(x) = max{0,x}
+	\label{eq:relu}
 \end{equation}
-
 
 \begin{figure}[h]
 	\centering
@@ -121,11 +129,27 @@ Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpaf�
 	\end{subfigure}
 	\caption{Aktivációs függvények }
 \end{figure}
-%TODO Nincs Befejezve
+
 \subsection{Veszteség függvények}
+A neurális hálózat tanításához szükséges meghatároznunk egy veszteségfüggvényt, mely megadja az átlagos a hálózat kimenetének eltérését az elvárt eredményhez képes adott súlyok és küszöbértékek mellett. Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, melynek bemeneti paraméterei a hálózat paraméterei, azaz súlyai ($w_1,\dots$) és küszöbértékei ($b_1,\dots$). Ezen többváltozós függvény képe a \emph{veszteségfelület}. 
+\paragraph[MSE]{Átlagos négyzetes hiba}
+Más néven \emph{mean squared error}
+
+\paragraph{Bináris keresztentrópia}
+
+\paragraph{Kategorikus keresztentrópia}
 
 %TODO Nincs Befejezve
-\subsection{A hálózat tanító algoritmusai}
+\subsection{A hálózat tanító algoritmusai: az optimalizálók}
+Korábban említettem, hogy egy neurális hálózat tanításán azt az eljárást értjük, amely során a hálózat rétegeihez tartozó súlyokat és küszöbértékeket -- más szóval a hálózat paramétereit -- változtatjuk. A tanítást egy optimalizáló algoritmus végzi, melynek bemenete az előző fejezetben tárgyalt veszteségfüggvények valamelyikének eredménye, kimenete pedig a hálózat új paraméterei. A gyakorlati megvalósítás során általában valamilyen gradiens alapú szélsőérték kereséssel minimalizáljuk a hibát. Mivel a veszteségfelület értelmezési tartománya többdimenziós vektorok halmaza, a függvény szélsőértékét a gradiens fogalmával definiálhatjuk, ami tulajdonképpen a derivált általánosítása. Tehát egy olyan eljárást kell alkalmazni, amely meg keresi azon $w_l$ és $b_k$ paramétereket, ahol a $C(\vec{w},\vec{b})$ függvény értéke a legkisebb.
+%TODO a neurális hálózatok veszteségfelületének minimuma nehezen határozható meg függvényanalízis segítséségvel-> iteratív eljárás
+Ezt iteratív módon visszük véghez. Az iterációkat \emph{eposzoknak} (angolul: epoch) nevezi a szakirodalom. Minden eposzban az optimalizáló hatására a kimeneti hiba csökken, a hálózat \emph{következtetése} egyre közelebb kerül az elvárthoz. A tanítás sebesség (angolul: learning rate) az optimalizálók egy másik paramétere, mellyel azt befolyásoljuk, hogy egy eposzban a hálózat paramétereit mekkora mértékben változtatjuk. Ezen paraméter változtatásánál fontolóra kell vennünk két tényezőt.
+A gradienst
+Nagy tanítási sebesség gyorsabb gradiens csökkenést eredményez
+
+\paragraph[SGD]{Sztochasztikus gradienscsökkentés}
+
+\paragraph[RMSprop]{Négyzetes közép}
 
 %TODO Nincs Befejezve
 \subsection{A kernel-trükk}
