@@ -31,17 +31,17 @@ A \ref{fig:neuralNet} ábrán a csúcsok jelentik a neuronokat és az élek a sz
 \end{enumerate*}
 A bemeneti réteg csúcsai legtöbbször az adatot reprezentáló konstansok jelentik, tehát az egy egyszerű vektor.
 Egy neuronban két művelet történik: a bementek összegzése és egy aktiváló függvény kiértékelés. Az összegzést a felsőbb rétegből érkező jelekre elvégezzük:
-\begin{equation}
+\begin{displaymath}
 	s = \sum_i{w_ix_i} = \vec{w}\cdot\vec{x}
-\end{equation}
+\end{displaymath}
 ahol $x_i$ a felső réteg i.-ik neuronjának kimenete, $w_i$ az i.-ik neuron szinapszisához tartozó súly, mellyel a szinapszis "erősségét" határozzuk meg. Az "s" összeghez hozzáadunk még egy $b$ értéket, a neuron aktiválási küszöbértéke lesz.
 Az aktivációs függvény adja a neurális hálózat kimenetét, paramétere $s+b$.
 A neurális hálózatok fejlesztésekor sokféle függvényt találtak alkalmasnak aktivációs függvény gyanánt. Közös jellemzőjük, hogy inflexiós pontjuk $x=0$ helyen van, illetve 0-ban nem deriválható függvények esetén a töréspont esik ide.
 
 A szemléletesség kedvéért tekintsünk meg az egyrétegű perceptront, vagyis egy egyetlen rétegből álló neurális hálózatot $k$ darab neuronnal. A bemenet legyen az $\vec{x}=(x_1,\dots,x_n)$ vektor (a gyakorlatban bemeneti rétegként szokták hívni). A szinapszisok súlyait a $W=\{w_{ij}:i=1\dots n,j=1\dots k\}$  mátrix ($\vec{w}_i$ az i. bemeneti adatból kiinduló szinapszisokhoz tartozó súlyok vektora lesz), a neuronok küszöbértékeit a $\vec{b}=(b_1,\dots,b_k)$ vektor tartalmazza. Az aktivációs függvény $f$. A hálózat kimenetét, vagyis a  $\vec{y}=(y_1,\dots,y_k)$ vektor elemeit megkapjuk a következőképpen:
-\begin{equation}
+\begin{displaymath}
 	y_i = f(\vec{w}_i\cdot\vec{x}+b_i)
-\end{equation}
+\end{displaymath}
 
 A fentiekből látszik, hogy a hálózat tervezésénél annak négy tulajdonságát kell meghatároznunk:
 \begin{enumerate*}
@@ -55,7 +55,7 @@ Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni.
 \section{Deep Learning}
 A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{Chollet} szereztem, melynek a témához kapcsolódó részleteit alább bemutatom.
 
-A gépi taunlás egy teljesen más programozási paradigmát jelent, ugyanis a klasszikus programozás során a feldolgozandó adatokhoz a programozó adja az adat feldolgozásának szabályait, amit végig követve a gép kiszámítja a kívánt eredményt. Ezzel szemben a gépi tanulás során a programozó az adathoz  a kívánt erdményt adja meg, amiből a gép felálíttja a megoldáshoz vezető szabályokat.%\cite{Chollet}
+A gépi taunlás egy teljesen más programozási paradigmát jelent, ugyanis a klasszikus programozás során a feldolgozandó adatokhoz a programozó adja az adat feldolgozásának szabályait, amit végig követve a gép kiszámítja a kívánt eredményt. Ezzel szemben a gépi tanulás során a programozó az adathoz  a kívánt eredményt adja meg, amiből a gép felállítja a megoldáshoz vezető szabályokat.%\cite{Chollet}
 
 A Deep Learning más néven a mély tanulás a gépi tanulás egy fajtája. Chollet szerint a név arra utal, hogy a kezdeti adaton több transzformációt végrehajtva egymás után egyre közelebb kerülünk egy olyan reprezentációhoz, ami megfelel a kívánalmainknak. Ezzel kontrasztban beszélhetünk sekély tanulásról, amikor kevés, egy vagy két transzformáció után kapjuk meg az adat megfelelő reprezentációját.%\cite{Chollet}
 A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulásban. Eredeti elgondolás szerint minden egyes neuron-réteg egyre összetettebb tulajdonságokat ismer fel a bemeneti adatból. Valójában a rétegenkénti transzformációk egyre kisebb összetettségű hipotézis térbe visznek át, a reprezentáció egyre kevesebb a felhasználó számára fölösleges információt tartalmaz. Minél több a réteg a hálózatban, annál \emph{mélyebb} a modell.
@@ -78,22 +78,32 @@ Az \emph{Önellenőrzött tanulás} hasonló az ellenőrzötthöz, azonban az ad
 Vizsgálódásomat az \emph{ellenőrzött tanulásra} korlátoztam, így a továbbiakban ennek tükrében folytatom dolgozatomat.
 
 \section{Függvények, algoritmusok}
-Az alábbiakban szeretném megfogalmazni a neurális hálózatokban alkalmazott tipikus függvényeket és algoritmusokat
+Az alábbiakban szeretném megfogalmazni a neurális hálózatokban alkalmazott tipikus függvényeket és algoritmusokat.
 %TODO Kicsit rövid
 \subsection{Neuronok aktivációs függvényei}
 Mint korábban kifejtettem minden neuron kimenete egy függvény kiértékelése, melynek paramétere a bemenetek súlyozott összege. Ezt a függvényt hívjuk aktivációs függvénynek. 
 
 \paragraph{A szigmoid függvény}
 Az utolsó, kimeneti neuronok rétegének aktivációs függvényeként alkalmazzuk, ahol a várt eredmény egyetlen valószínűségi érték. Ez bináris osztályozási problémák esetén alkalmazandó, tehát a program célja, hogy egy bemeneti adatról eldöntse, hogy az egy bizonyos kategóriába esik-e vagy sem, illetve erről mekkora "magabiztossággal" döntött.
-\begin{equation}
+\begin{displaymath}
 	\sigma(x)= \frac{1}{1+e^{-x}}
-\end{equation}
+\end{displaymath}
+
 
 \paragraph{A softmax függvény} 
-A kimeneti réteg aktivációs függvénye. K elemű szám n-esek halmazába képez, mely n-esek elemei egy valószínűségi eloszlás értékeit adják, tehát összegük 1. Éppen ezért Többosztályos problémáknál érdemes használni úgy, hogy a kimenet elemei rendre megadják, hogy a bemeneti minta mekkora valószínűséggel esik az osztályok valamelyikébe.
+A kimeneti réteg aktivációs függvénye. $D$ dimenziójú $z$ vektorok koordinátáit normalizálja, másként fogalmazva egy tetszőleges $D$ elemű szám n-est azon $D$ elemű n-esek halmazába képezi, melyek elemeinek összege 1. Így tehát a $z$ koordinátái egy diszkrét valószínűségi eloszlás értékkészlete. 
+\begin{displaymath}
+\sigma(z_i)=\frac{e^{z_i}}{\sum_{j=1}^{D}},\quad i = 1,\dots,D
+\end{displaymath}
+Éppen ezért Többosztályos problémáknál érdemes használni úgy, hogy a kimenet elemei rendre megadják, hogy a bemeneti minta mekkora valószínűséggel esik az osztályok valamelyikébe.
+
 
 \paragraph{ReLu}
-Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpafüggvény a rejtett neuron rétegek aktivációs értéke szokott lenni.
+Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpafüggvény a rejtett neuron rétegek aktivációs értéke szokott lenni. Először 2011-ben mutatták be, hogy hatékonyabban taníthatóak a neurális hálózatok, mintha csak szigmoid függvényt használnánk neuronok aktivációs függvényeként.\cite{wiki:relu}
+\begin{equation}
+	f(x) = max{0,x}
+\end{equation}
+
 
 \begin{figure}[h]
 	\centering
