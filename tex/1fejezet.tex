@@ -80,9 +80,6 @@ A \emph{Megerősítéses tanulás} egy újfajta megközelítése a neurális há
 Vizsgálódásomat az \emph{ellenőrzött tanulásra} korlátoztam, így a továbbiakban ennek tükrében folytatom dolgozatomat.
 
 \section{Függvények, algoritmusok}\label{sec:fuggvenyek-algoritmusok}
-Az előbbieket összefoglalva tehát a gyakran hangoztatott mély neurális hálózatok a mesterséges neurális hálózatok felhasználása gépi tanulásra.
-
-
 Az alábbiakban szeretném megfogalmazni a neurális hálózatokban alkalmazott tipikus függvényeket és algoritmusokat.
 %TODO Kicsit rövid
 \subsection{Neuronok aktivációs függvényei}
@@ -128,15 +125,19 @@ Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpaf�
 \end{figure}
 
 \subsection{Veszteség függvények}
-A neurális hálózat tanításához szükséges meghatároznunk egy veszteségfüggvényt, mely megadja a hálózat kimenetének átlagos eltérését az elvárt eredményhez képest adott súlyok mellett. Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, $W,B$, a súlyokat és küszöbértékeket egybefogó vektorok halmaza. Ezen többváltozós függvény képe a \emph{veszteségfelület}. 
+A neurális hálózat tanításához szükséges meghatároznunk egy veszteségfüggvényt, mely megadja a hálózat kimenetének átlagos eltérését az elvárt eredményhez képest adott súlyok mellett. Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, $W,B$, a súlyokat és küszöbértékeket egybefogó vektorok halmaza. Ezen többváltozós függvény képe a \emph{veszteségfelület}.
+
 \paragraph[MSE]{Átlagos négyzetes hiba}
 Többosztályos problémánál a neurális hálózat egy valószínűségi változó eloszlása az összes osztályon. $\vec{y}$ vektor a hálózat válasza a $\vec{x}$ bemenetre, $\vec{y'}$ pedig a kívánt kimenet vektora --egy egységvektor, melynek 1 értékű koordinátája reprezentálja a megfelelő osztályt. Erre az esetre olyan veszteségfüggvényt alkalmazhatunk mely ekvivalens a $(x,y)\in Z$ tanítási készletből számított $MSE$ átlagos négyzetes hibáinak átlagával.
-$$ MSE(\vec{y},\vec{y'}) = \frac{1}{n}\sum_{i=1}^{n} \|y_i - y'_i\|^2 $$
-$$ c(w,b) = \frac{1}{m}\sum_{j=1}^{m} MSE(\vec{y}_j,\vec{y'}_j) $$
-Itt n az kimeneti vektor dimenziója, m a tanító minták száma.
-%\begin{displaymath}
-%	C(w,b)\equiv\frac{1}{2n}\sum_x\|y-y'\|^2\quad\footnote{forrás\cite{Nielsen2015}}
-%\end{displaymath}
+\begin{align*}
+	MSE(\vec{y},\vec{y'}) = \frac{1}{n}\sum_{i=1}^{n} \|y_i - y'_i\|^2\\
+	c(w,b) = \frac{1}{m}\sum_{j=1}^{m} MSE(\vec{y}_j,\vec{y'}_j)\\
+\end{align*}
+A fenti egyenletekben n az kimeneti vektor dimenziója, m a tanító minták száma.
+	%
+	%\begin{displaymath}
+	%	C(w,b)\equiv\frac{1}{2n}\sum_x\|y-y'\|^2\quad\footnote{forrás\cite{Nielsen2015}}
+	%\end{displaymath}
 
 \paragraph{Bináris keresztentrópia}
 
