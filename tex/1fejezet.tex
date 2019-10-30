@@ -15,12 +15,10 @@ Hogy a hálózat áttekinthető legyen, rendezzük a neuronokat rétegekbe úgy,
 \begin{figure}[h]
 	\centering
 %	\includegraphics[width=0.9\textwidth]{Colored_neural_network.svg}
-	\def\svgwidth{0.2\columnwidth}
-	\input{fig/Colored_neural_network.pdf_tex}
+	\includegraphics[width=0.3\columnwidth]{fig/neural_network}
 	\caption{neurális hálózat réteges szerkezete \protect \footnotemark}
 	\label{fig:neuralNet}
 \end{figure}
-
 \footnotetext{forrás: https://en.wikipedia.org/wiki/Artificial\_neural\_network}
 
 A \ref{fig:neuralNet} ábrán a csúcsok jelentik a neuronokat és az élek a szinapszisok, melyeken az ingerület vándorol. Egy hálózat 3 nagyobb részre tagolódik:
@@ -38,7 +36,7 @@ ahol $x_i$ a felső réteg i.-ik neuronjának kimenete, $w_i$ az i.-ik neuron sz
 Az aktivációs függvény adja a neurális hálózat kimenetét, paramétere $s+b$.
 A neurális hálózatok fejlesztésekor sokféle függvényt találtak alkalmasnak aktivációs függvény gyanánt. Közös jellemzőjük, hogy inflexiós pontjuk $x=0$ helyen van, illetve 0-ban nem deriválható függvények esetén a töréspont esik ide.
 
-A szemléletesség kedvéért tekintsünk meg az egyrétegű perceptront, vagyis egy egyetlen rétegből álló neurális hálózatot $k$ darab neuronnal. A bemenet legyen az $\vec{x}=(x_1,\dots,x_n)$ vektor (a gyakorlatban bemeneti rétegként szokták hívni). A szinapszisok súlyait a $W=\{w_{ij}:i=1\dots n,j=1\dots k\}$  mátrix ($\vec{w}_i$ az i. bemeneti adatból kiinduló szinapszisokhoz tartozó súlyok vektora lesz), a neuronok küszöbértékeit a $\vec{b}=(b_1,\dots,b_k)$ vektor tartalmazza. Az aktivációs függvény $f$. A hálózat kimenetét, vagyis a  $\vec{y}=(y_1,\dots,y_k)$ vektor elemeit megkapjuk a következőképpen:
+A szemléletesség kedvéért tekintsünk meg az egyrétegű perceptront, vagyis egy egyetlen rétegből álló neurális hálózatot $k$ darab neuronnal. A bemenet legyen az $\vec{x}=(x_1,\dots,x_n)$ vektor (a gyakorlatban bemeneti rétegként szokták hívni). A szinapszisok súlyait a $W=\{w_{ij}:i=1\dots n,j=1\dots k\}$  mátrix ($\vec{w}_i$ az i. bemeneti adatból kiinduló szinapszisokhoz tartozó súlyok vektora lesz), a neuronok küszöbértékeit a $\vec{b}=(b_1,\dots,b_k)$ tartalmazza. Az aktivációs függvény $f$. A hálózat kimenetét, vagyis a  $\vec{y}=(y_1,\dots,y_k)$ elemeit megkapjuk a következőképpen:
 \begin{displaymath}
 	y_i = f(\vec{w}_i\cdot\vec{x}+b_i)
 \end{displaymath}
@@ -50,7 +48,7 @@ A fentiekből látszik, hogy a hálózat tervezésénél annak négy tulajdonsá
 	\item a szinapszisok súlyát ($W$)
 	\item a neuronok aktiválási küszöbét ($\vec{b}$).
 \end{enumerate*}
-Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni. Ez nagyon sok külön meghatározandó változót jelent, tehát csak az 1. és 2. tulajdonság meghatározása elvárható. Kell egy algoritmus, mellyel $w$ és $b$ paraméterek sokasága meghatározható.
+Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni. \textbf{Az egyszerűség kedvéért az egy réteghez tartozó $W$-t és $\vec{b}$-t együttesen nevezzük a réteg \emph{súlyainak}}. Ez nagyon sok külön meghatározandó változót jelent, tehát csak az 1. és 2. tulajdonság meghatározása elvárható. Kell egy algoritmus, mellyel az egész hálózathoz tartozó paraméterek sokasága -- vagyis minden réteg súlyának paraméterei -- meghatározható.
 
 
 \section{Deep Learning}
@@ -59,7 +57,7 @@ A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{Choll
 A gépi taunlás egy teljesen más programozási paradigmát jelent, ugyanis a klasszikus programozás során a feldolgozandó adatokhoz a programozó adja az adat feldolgozásának szabályait, amit végig követve a gép kiszámítja a kívánt eredményt. Ezzel szemben a gépi tanulás során a programozó az adathoz  a kívánt eredményt adja meg, amiből a gép felállítja a megoldáshoz vezető szabályokat.%\cite{Chollet}
 
 A Deep Learning más néven a mély tanulás a gépi tanulás egy fajtája. Chollet szerint a név arra utal, hogy a kezdeti adaton több transzformációt végrehajtva egymás után egyre közelebb kerülünk egy olyan reprezentációhoz, ami megfelel a kívánalmainknak. Ezzel kontrasztban beszélhetünk sekély tanulásról, amikor kevés, egy vagy két transzformáció után kapjuk meg az adat megfelelő reprezentációját.%\cite{Chollet}
-A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulásban. Eredeti elgondolás szerint minden egyes neuron-réteg egyre összetettebb tulajdonságokat ismer fel a bemeneti adatból. Valójában a rétegenkénti transzformációk egyre kisebb összetettségű hipotézis térbe visznek át, a reprezentáció egyre kevesebb a felhasználó számára fölösleges információt tartalmaz. Minél több a réteg a hálózatban, annál \emph{mélyebb} a modell.
+A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulásban. Eredeti elgondolás szerint minden egyes neuron-réteg egyre összetettebb tulajdonságokat ismer fel a bemeneti adatból. Valójában a rétegenkénti transzformációk egyre kisebb összetettségű hipotézis térbe visznek át, a reprezentáció egyre kevesebb -- a felhasználó számára fölösleges -- információt tartalmaz. Minél több réteg van a hálózatban, annál \emph{mélyebb} a modell.
 
 \begin{figure}[h]
 	\centering
@@ -70,11 +68,11 @@ A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulá
 \end{figure}
 \footnotetext{Forrás:\protect\cite{Chollet}}
 
-Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{sect:neuralNetworkTheory} alfejezetben kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $W$ mátrixok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok változóinak száma hatalmas lehet, ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk--- tehát beállításukhoz valamilyen algoritmusra van szükség. Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Négy  megközelítés létezik, amikor gépi tanulásról van szó.
+Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{sect:neuralNetworkTheory} alfejezetben kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $\vec{w}$ súlyok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok összes koordinátájának száma hatalmas lehet, ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk--- tehát beállításukhoz valamilyen algoritmusra van szükség. Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Négy  megközelítés létezik, amikor gépi tanulásról van szó.
 
-\emph{Ellenőrzött tanulás} során a neurális hálózatnak felcímkézett adatokat adunk meg, tehát olyan értéket rendelünk hozzájuk, amilyet szeretnénk, hogy a hálózat produkáljon. A hálózat leképezi az adatot a meghatározott reprezentációvá. A tanuló algoritmus ebből és a címkéből egy \emph{veszteség függvény} kiszámításával meghatározza, hogy mekkora az eltérés, a valamilyen értelemben vett távolság a kapott és az elvárt eredmény között. Ez alapján frissíti a $W$ mátrixokat és $\vec{b}$ vektorokat.
+\emph{Ellenőrzött tanulás} során a neurális hálózatnak felcímkézett adatokat adunk meg, tehát olyan $y$ értéket  rendelünk az $x$ mintákhoz, amilyet szeretnénk, hogy a hálózat produkáljon. Ezen $z=(x,y)$ összerendezések halmazát \emph{tanítókészletnek} hívjuk. A hálózat leképezi az adatot a meghatározott reprezentációvá. A tanuló algoritmus ebből és a címkéből egy \emph{veszteség függvény} kiszámításával meghatározza, hogy mekkora az eltérés, a valamilyen értelemben vett távolság a kapott és az elvárt eredmény között. Ez alapján frissíti a $\vec{w}$ súlyokat és $\vec{b}$ vektorokat.
 
-\emph{Ellenőrizetlen tanulás}, mely során az adatokat nem címkézzük fel, hanem arra vagyunk kíváncsiak, hogy miféle összefüggések vannak közöttük. Ezt a módszert adatbányászat során alkalmazzák. 
+\emph{Ellenőrizetlen tanulás}, mely során az adatokat nem címkézzük fel, hanem arra vagyunk kíváncsiak, hogy miféle összefüggések állnak fenn közöttük. Ezt a módszert adatbányászat során alkalmazzák. 
 
 Az \emph{Önellenőrzött tanulás} hasonló az ellenőrzötthöz, azonban az adatok felcímkézését nem emberi erővel végezzük, hanem az adatokból állítjuk elő valamilyen heurisztikát felhasználva. Egyik alkalmazási területe az autóenkóderek tanítása.
 
@@ -98,13 +96,12 @@ Az utolsó, kimeneti neuronok rétegének aktivációs függvényeként alkalmaz
 \end{equation}\
 
 \paragraph{A softmax függvény}
-A kimeneti réteg aktivációs függvénye. $D$ dimenziójú $z$ vektorok koordinátáit normalizálja, másként fogalmazva egy tetszőleges $D$ elemű szám n-est azon $D$ elemű n-esek halmazába képezi, melyek elemeinek összege 1. Így tehát a $z$ koordinátái egy diszkrét valószínűségi eloszlás értékkészlete. 
+A kimeneti réteg aktivációs függvénye. $D$ dimenziójú $x$ vektorok koordinátáit normalizálja, másként fogalmazva egy tetszőleges $D$ elemű szám n-est azon $D$ elemű n-esek halmazába képezi, melyek elemeinek összege 1. Így tehát a $x$ koordinátái egy diszkrét valószínűségi eloszlás értékkészlete. 
 \begin{equation}
-\sigma(z_i)=\frac{e^{z_i}}{\sum_{j=1}^{D}},\quad i = 1,\dots,D
+\sigma(x_i)=\frac{e^{x_i}}{\sum_{j=1}^{D}e^{x_i}},\quad i = 1,\dots,D
 \label{eq:softmax}
 \end{equation}
-Éppen ezért Többosztályos problémáknál érdemes használni úgy, hogy a kimenet elemei rendre megadják, hogy a bemeneti minta mekkora valószínűséggel esik az osztályok valamelyikébe.
-
+Éppen ezért többosztályos problémáknál használatos.A hálózat egy mintára adott válasza annak a diszkrét valószínűségi változónak az eloszlása, mely a minta egy adott kategóriába tartozásának a valószínűségét adja meg.
 
 \paragraph{ReLu}
 Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpafüggvény a rejtett neuron rétegek aktivációs értéke szokott lenni. Először 2011-ben mutatták be, hogy hatékonyabban taníthatóak a neurális hálózatok, mintha csak szigmoid függvényt használnánk neuronok aktivációs függvényeként.\cite{wiki:relu}
@@ -131,9 +128,15 @@ Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpaf�
 \end{figure}
 
 \subsection{Veszteség függvények}
-A neurális hálózat tanításához szükséges meghatároznunk egy veszteségfüggvényt, mely megadja az átlagos a hálózat kimenetének eltérését az elvárt eredményhez képes adott súlyok és küszöbértékek mellett. Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, melynek bemeneti paraméterei a hálózat paraméterei, azaz súlyai ($w_1,\dots$) és küszöbértékei ($b_1,\dots$). Ezen többváltozós függvény képe a \emph{veszteségfelület}. 
+A neurális hálózat tanításához szükséges meghatároznunk egy veszteségfüggvényt, mely megadja a hálózat kimenetének átlagos eltérését az elvárt eredményhez képest adott súlyok mellett. Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, $W,B$, a súlyokat és küszöbértékeket egybefogó vektorok halmaza. Ezen többváltozós függvény képe a \emph{veszteségfelület}. 
 \paragraph[MSE]{Átlagos négyzetes hiba}
-Más néven \emph{mean squared error}
+Többosztályos problémánál a neurális hálózat egy valószínűségi változó eloszlása az összes osztályon. $\vec{y}$ vektor a hálózat válasza a $\vec{x}$ bemenetre, $\vec{y'}$ pedig a kívánt kimenet vektora --egy egységvektor, melynek 1 értékű koordinátája reprezentálja a megfelelő osztályt. Erre az esetre olyan veszteségfüggvényt alkalmazhatunk mely ekvivalens a $(x,y)\in Z$ tanítási készletből számított $MSE$ átlagos négyzetes hibáinak átlagával.
+$$ MSE(\vec{y},\vec{y'}) = \frac{1}{n}\sum_{i=1}^{n} \|y_i - y'_i\|^2 $$
+$$ c(w,b) = \frac{1}{m}\sum_{j=1}^{m} MSE(\vec{y}_j,\vec{y'}_j) $$
+Itt n az kimeneti vektor dimenziója, m a tanító minták száma.
+%\begin{displaymath}
+%	C(w,b)\equiv\frac{1}{2n}\sum_x\|y-y'\|^2\quad\footnote{forrás\cite{Nielsen2015}}
+%\end{displaymath}
 
 \paragraph{Bináris keresztentrópia}
 
@@ -141,7 +144,14 @@ Más néven \emph{mean squared error}
 
 %TODO Nincs Befejezve
 \subsection{A hálózat tanító algoritmusai: az optimalizálók}
-Korábban említettem, hogy egy neurális hálózat tanításán azt az eljárást értjük, amely során a hálózat rétegeihez tartozó súlyokat és küszöbértékeket -- más szóval a hálózat paramétereit -- változtatjuk. A tanítást egy optimalizáló algoritmus végzi, melynek bemenete az előző fejezetben tárgyalt veszteségfüggvények valamelyikének eredménye, kimenete pedig a hálózat új paraméterei. A gyakorlati megvalósítás során általában valamilyen gradiens alapú szélsőérték kereséssel minimalizáljuk a hibát. Mivel a veszteségfelület értelmezési tartománya többdimenziós vektorok halmaza, a függvény szélsőértékét a gradiens fogalmával definiálhatjuk, ami tulajdonképpen a derivált általánosítása. Tehát egy olyan eljárást kell alkalmazni, amely meg keresi azon $w_l$ és $b_k$ paramétereket, ahol a $C(\vec{w},\vec{b})$ függvény értéke a legkisebb.
+Korábban említettem, hogy egy neurális hálózat tanításán azt az eljárást értjük, amely során a hálózat paramétereit változtatjuk. A tanítást egy optimalizáló algoritmus végzi, melynek bemenete az előző fejezetben tárgyalt veszteségfüggvények valamelyikének eredménye, kimenete pedig a hálózat új paraméterei. A gyakorlati megvalósítás során általában valamilyen gradiens alapú szélsőérték kereséssel minimalizáljuk a hibát. Mivel a veszteségfelület értelmezési tartománya többdimenziós vektorok halmaza, a függvény szélsőértékét a gradiens fogalmával definiálhatjuk, ami tulajdonképpen a derivált általánosítása. Tehát egy olyan eljárást kell alkalmazni, amely meg keresi azon $w_l$ és $b_k$ paramétereket, ahol a $c(\vec{w},\vec{b})$ függvény értéke a legkisebb.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig/DNN_dia}
+	\caption{A neurális hálózat tanításának folyamata}
+	\label{fig:dnn}
+\end{figure}
+
 %TODO a neurális hálózatok veszteségfelületének minimuma nehezen határozható meg függvényanalízis segítséségvel-> iteratív eljárás
 Ezt iteratív módon visszük véghez. Az iterációkat \emph{eposzoknak} (angolul: epoch) nevezi a szakirodalom. Minden eposzban az optimalizáló hatására a kimeneti hiba csökken, a hálózat \emph{következtetése} egyre közelebb kerül az elvárthoz. A tanítás sebesség (angolul: learning rate) az optimalizálók egy másik paramétere, mellyel azt befolyásoljuk, hogy egy eposzban a hálózat paramétereit mekkora mértékben változtatjuk. Ezen paraméter változtatásánál fontolóra kell vennünk két tényezőt.
 A gradienst
