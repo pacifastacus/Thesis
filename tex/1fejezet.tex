@@ -140,8 +140,13 @@ A fenti egyenletekben n az kimeneti vektor dimenziója, m a tanító minták sz�
 	%\end{displaymath}
 
 \paragraph{Bináris keresztentrópia}
+Bináris osztályozási feladatnál olyan módszert használhatunk a veszteség  vagy hiba érték számításához, melynél az $y$ és $y'$ minták kereszt entrópiáját határozzuk meg
+\begin{displaymath}
+	H(y,y')= -\sum_{x\in \mathcal{X}}y(x)\log_2 y'(x)
+\end{displaymath}
 
 \paragraph{Kategorikus keresztentrópia}
+Az átlagos négyzetes hiba helyett veszteségfüggvényként alkalmazhatjuk a keresztentrópia Többosztályos feladat
 
 %TODO Nincs Befejezve
 \subsection{A hálózat tanító algoritmusai: az optimalizálók}
@@ -160,7 +165,9 @@ Nagy tanítási sebesség gyorsabb gradiens csökkenést eredményez
 
 \paragraph[SGD]{Sztochasztikus gradienscsökkentés}
 
-\paragraph[RMSprop]{Négyzetes közép}
+\paragraph[RMSprop]{négzetes közép visszaterjesztése}
+%RMSprop -> Root Mean Square propagation
+
 
 %TODO Nincs Befejezve
 \subsection{A kernel-trükk}

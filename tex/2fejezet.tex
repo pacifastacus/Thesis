@@ -1,8 +1,7 @@
 %-------------------------------------------------------------------------------
 \chapter{Mély tanuló alkalmazások fejlesztése}
 %-------------------------------------------------------------------------------
-% TODO: Mélytanulásos keretrendszerek bemutatása általánosságban (mire jók, stb...)
-A mély tanulás, azon belül is a mesterséges neurális hálózatok gyors fejlődősét és részben népszerűségét a hozzá készített programozási keretrendszereknek köszönheti, melyek java szabad hozzáférésű. Ezek a keretrendszerek arra hivatottak, hogy támogassák a neurális hálózatok fejlesztését új programozási módszertant adva. Már létező programozási nyelvekre épülnek, leginkább python-ra. Ezekben a keretrendszerekben egyszerűen implementálhatunk neurális hálózatokat úgy, hogy egyfajta nyelvi eszközkészletet adnak a hálózat definiálására.
+A mély tanulás, azon belül is a mesterséges neurális hálózatok gyors fejlődősét és részben népszerűségét a hozzá készített programozási keretrendszereknek köszönheti, melyek java szabad hozzáférésű. Ezek a keretrendszerek arra hivatottak, hogy támogassák a neurális hálózatok fejlesztését új programozási módszertant adva. Már létező programozási nyelvekre épülnek, leginkább python-ra. Ezekben a keretrendszerekben egyszerűen implementálhatunk neurális hálózatokat úgy, hogy egyfajta nyelvi eszközkészletet adnak neurális hálózatok definiálására.
 
 \section{TensorFlow}
 
@@ -22,7 +21,7 @@ from keras import models
 from keras import layers
 
 network = models.Sequential()
-network.add(layers.Dense(32, activation='relu', input_shape=(784,)))
+network.add(layers.Dense(15, activation='relu', input_shape=(784,)))
 network.add(layers.Dense(10, activation='softmax'))
 \end{lstlisting}\label{lst:defLayers}
 \end{minipage}
@@ -39,8 +38,8 @@ A megalkotott hálózatot a \verb|network| objektum definiálja. Hogy taníthat�
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Python,caption=Hálózat betanítása]
-network.compile(optimizer = 'rmsprop',
-loss = 'binary_crossentropy',
+network.compile(optimizer = 'sgd',
+loss = 'mean_squared_error',
 metrics = ['acc'])
 
 history = network.fit(train_datas,
