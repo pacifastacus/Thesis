@@ -2,7 +2,7 @@
 \chapter{Speciális platformok megjelenése}
 %-------------------------------------------------------------------------------
 \section{hybrid deep learning}
-A ha
+%TODO Nincs befejezve
 
 \section{nGraph}
 A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
@@ -80,20 +80,63 @@ Az nGraph gráf szintű optimalizációját ráadásul kiegészíti automatikusa
 
 Összegzésül tehát az nGraph feldarabolja a neurális hálózathoz tartozó számítási gráfot processzor architektúrának megfelelően, majd ezen gráfokat a PlaidML lefordítja a megfelelő kódokra, melyeket aztán a célprocesszorokra lefordítunk és futtatunk.
 
+%TODO ide még jöhetne egy nGraph használatát bemutató alfejezet 
 \section{Myriad X és az Intel Neural Computer Stick 2}
-
 %Motiváció: Valós idejű alkalmazások esetén szükséges az offline számítás -> GPU - lehetséges, de erőforrás igényes(áram és hűtés) és nagy méretű 
+Ma az iparban mély tanulással működő modern alkalmazások nagy méretű és teljesítményű számítógépeket igényelnek. Erre az igényre válaszul felhő szolgáltatást nyújtó vállalatok külön platformot építettek ki. Az ilyen kliens-szerver architektúrájú gépi tanulás hatékony lehet, azonban a valós-idejű alkalmazásoknál és hordozható eszközökben történő felhasználásnál komoly hátrányt jelenthet a hálózati késleltetés. Hogy ilyen területeken is alkalmazható legyen a mély tanulás, hardvergyártók olyan kis energiafogyasztású \emph{alkalmazás-specifikus integrált áramkörök} fejlesztésére törekedtek, melyek képesek neurális hálózatokat hatékonyan futtatni. Ilyen az Intel által kifejlesztett Myriad X lapka is, melyet főleg \emph{gépi látáshoz} terveztek.
 
+Maga a Myriad egy Videójel feldolgozó processzor széria, melynek 3. generációja a Myriad X architektúrája kiegészült egy úgynevezett \emph{Neural Compute Engine-el}, mely a betanított hálózatok futtatását hivatott gyorsítani. Ezzel együtt a lapka 16 darab 128-bit VLIW processzormagok, ún. SHAVE magot és 2,5MB 400GB/s sávszélességű memóriát tartalmaz. Számításokat 8bites egészek és 16bites lebegőpontos váltózókon tud végezni.\footnote{forrás: https://www.movidius.com/myriadx} 
+% TODO Myriad X
+
+A Myriad X kifejlesztésén túlmenően a vállalat tervezett egy gyorsítókártyát is ehhez a processzorhoz, melyet Neural Compute Stick (NCS) névvel forgalmaz. Az Intel kiadta a második verzióját az eszköznek  Neural Compute Stick 2 (NCS2) névvel és az első verziót nem forgalmazz már. Ezért a továbbiakban a leírtakat az NCS2-re kell érteni.
+Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel használható, többek között Raspberry Pi-vel is. Meghajtására az Intel OpenVINO eszközkészlete használható, melyet gépi látáson alapuló alkalmazások fejlesztésére készített a vállalat. Lehetőség van egy platformon több NCS2 modul együttes használatára, így egyszerűen növelhető a rendszer teljesítménye.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{fig/NCS2-specs}\\
+	\footnotesize forrás:https://software.intel.com/en-us/neural-compute-stick
+	\caption{Neural Compute Stick 2 gyorsító} 
+	\label{fig:ncs2-specs}
+\end{figure}
 %TODO Nincs Befejezve
+
+\subsection{Az NCS2 használata OpenVINO keretrendszerben}
+Az alábbiak alapját az Intel OpenVINO eszközkészletének dokumentációja adja.\cite{web:OpenVINO} A dokumentációban a felépített neurális hálózatokra modell néven hivatkoznak, amit most én is átveszek.
+
+Az OpenVINO eszközkészlet alkalmas arra, hogy gyorsan készítsünk olyan alkalmazásokat, melyek valamilyen módon emulálják az emberi látást. Képesek vagyunk segítségével az NCS2-n kívül más Intel gyártmányú hardverrel dolgozni, például Intel CPU-n és integrált GPU-n. Továbbá népszerű keretrendszereket támogat, mint a TensorFlow, Caffe, MXNet vagy az ONNX. Az eszközkészlet komponensekei közül az alábbiakat emelném ki:
+\begin{description}[noitemsep]
+	\item[Inference Engine] python API, aminek segítségével különböző gyorsítókártyák megszólíthatók egységes módon.
+	\item[Model Optimizer] parancssoros alkalmazás mentett modellek átkonvertálására. Ahhoz, hogy a különböző keretrendszerekben megalkotott modelleket egységesen tudja kezelni az Inference Engine, szükség van azok átkonvertálására egy platformfüggetlen struktúrába.
+	\item[OpenCV] az OpenCV közösségi fejlesztésű verziójának Intel hardverekre fordított változata.
+\end{description}
+
+Az OpenVINO-val való munka folyamatának három fő lépése van:
+\begin{enumerate*}[label={}, font=\bfseries]
+	\item Betanított Neurális hálózat beszerzése;
+	\item a hálózat átkonvertálása a Model Optimizer-rel;
+	\item python szkript implementálása az Inference Engine-t tartalmazó modulokkal, melyben az átkonvertált fájlokat lefuttatjuk a célhardveren
+\end{enumerate*}
 
 \section{Google Edge TPU}
-Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejlesztő panelt, mély tanulást alkalmazó projektekhez. A Google Edge TPU-ról és a Coral USB Accelerator-ról a Heartbeat internetes magazinban megjelent cikkben értesültem.\cite{web:GoogleEdge}
+Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejlesztő panelt, mély tanulást alkalmazó projektekhez. A Google Edge TPU-ról és a Coral USB Accelerator-ról a Heartbeat internetes magazinban megjelent cikkben értesültem.\cite{web:GoogleEdge} A Google TPU-ról szerzett ismereteim a wikipédia ,,Tensor Processing unit'' cikkéből szereztem.\cite{wiki:TPU}
 
-Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzort és az Intel Neural Compute Stick 2. A valós idejű mély tanuló alkalmazások igénylik az offline módon történő számítást kis fogyasztás mellett.
-Az Intel-től eltérően a Google ún. Tensor Processing Unit-ot, egy saját fejlesztésű gyorsítókártyát használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezeket a társprocesszor kártyákat a Google a saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a mátrix szorzás, konvolúció és az aktváló függvények alkalmazása az \ref{section:neuralNetworkTheory} alfejezetben tárgyalt módon. 
+\begin{figure*}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{fig/penny-edge-tpu}\\
+	\footnotesize forrás: https://cloud.google.com/edge-tpu/
+	\caption{Edge TPU}
+	\label{fig:EdgeTPU}
+\end{figure*}
+\begin{figure*}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{fig/Coral_USBAccelerator}\quad
+	\caption[Coral USB Accelerator]{Az Edge TPU-t építették az USB interfésszel ellátott Coral USB Accerlerator-ba.\cite{web:GoogleEdge}}
+	\label{fig:coralusbaccelerator}
+\end{figure*}
 
-Az Edge TPU már egy alkalmazásspecifikus integrált áramkör más néven ASIC.
-%TODO Nincs Befejezve
+
+A Google a Tensor Processing Unit\texttrademark-ot, egy saját fejlesztésű alkalmazásspecifikus integrált áramkört használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezek lényegében mátrix műveletekre számítására fejlesztett processzorok CISC utasításkészlettel. Három generációt ért meg, az első még csak 8-bites egészeken tudott műveleteket végezni, azonban már a második generáció képes volt lebegőpontos számításokra is. A Tensor processing unit-okkal felszerelt gyorsítókártyákat a Google saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a konvolúció és az \ref{sect:neuralNetworkTheory} alfejezetben tárgyalt aktváló függvények alkalmazása a mátrix szorzáson túl.
+
+Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méretben és energiafogyasztásban. Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzor. Azzal összehasonlítva viszont képes neurális hálózatok tanítására is korlátozott mértékben. Az Edge TPU részét képezi a Google Coral eszközkészletének, mellyel alternatívát nyújtanak a felhőalapú Cloud AI szolgáltatással szemben. A Coral különböző fajtájú hardvert nyújt a felhasználóknak, mindegyik központi eleme az Edge TPU. Az eszköz programozásához használható API-t az Edge TPU python könyvtár (\verb|edgetpu| python modul) valósítja meg, amely képes TensorFlow Lite-ban alkotott betanított neurális hálózatok futtatására. A könyvtár kulcsfontosságú interfészeit a következő osztályok képezik.Képosztályozási feladatokhoz a \verb|ClassificationEngine| használatos, vizuális objektumazonosításra a \verb|DetectionEngine|. Az \verb|ImprintingEngine| és \verb|SoftmaxRegression| az ún. \emph{transzfer tanuláshoz} alkalmazható, vagyis előre betanított hálózatok a feladatnak megfelelő újratanítását végezhetjük el vele.
 
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
