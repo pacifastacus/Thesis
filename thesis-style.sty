@@ -7,6 +7,7 @@
 \usepackage{txfonts}
 %\usepackage{mathptmx}	%Times betűtípus
 %\usepackage{fontspec}		% csomag a \setmainfont hoz (XeLatex!!!!)
+%\setmainfont{Times New Roman}	%Times New Roman betűtípus (fontspec csomag!)
 \usepackage[magyar]{babel}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -21,7 +22,13 @@
 	left=3cm,
 	right=2cm
 ]{geometry}
+\usepackage{float}	% lebegő elemek szigorú beszúrásához
+\usepackage[inline]{enumitem} % sorfolytonos felsorolás
+\usepackage{examplep} % verbatim description item-ek
+\usepackage{listings}	%forráskódokhoz
+\usepackage{url}
 
+\def\lstlistingname{kód}
 %\linespread{1.3}
 %\linespread{1.6}
 \onehalfspacing
@@ -51,4 +58,35 @@
 	numbers=left
 }
 
-%\setmainfont{Times New Roman}	%Times New Roman betűtípus (fontspec csomag!)
+%\usepackage[]{hyperref}
+%\usepackage{showframe}	%margók rajzolása
+%\usepackage[
+%backend=biber,
+%style=numeric,		%Hogy legyenek jelölve a hivatkozások
+%sorting=type			%n=név, t=title, y=year
+%]{biblatex}
+
+%\hypersetup{
+%	pdftitle={\CIM},
+%	pdfauthor={\SZERZO},
+%	pdfsubject={Your subject here},
+%	pdfkeywords={keyword1, keyword2},
+%	bookmarksnumbered=true,     
+%	bookmarksopen=true,         
+%	bookmarksopenlevel=1,       
+%	colorlinks=true,            
+%	pdfstartview=Fit,           
+%	pdfpagemode=UseOutlines,    % this is the option you were lookin for
+%	pdfpagelayout=TwoPageRight
+%}
+
+%\DeclareSortingScheme[locale=hu_HU]{type}{
+%	\sort{\field{key}}
+%	\sort{\field{name}}
+%	\sort{\field{year}}
+%	\sort{\field{title}}
+%}
+%\defbibheading{bibliography}[Irodalomjegyzék]{%
+%	\chapter*{#1}%
+%	\markboth{#1}{#1}%
+%}

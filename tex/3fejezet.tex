@@ -71,8 +71,8 @@ Ez a szám a processzor architektúrák számán (h), adattípusokon (t), művel
 	\label{table:kernels}
 \end{table}
 
-Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnotemark, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{github:PlaidML}\cite{web:PlaidML}
-\footnotetext{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő számításokat tudjunk hatékonyan programozni}
+Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnote{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő algoritmusokat tudjunk hatékonyan programozni}, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{github:PlaidML}\cite{web:PlaidML}
+
 
 Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform független IR-rel igyekszik orvolsoni a skálázható backend-el kapcsolatos kihívást. A PlaidML ezt megtámogatja azzal, hogy képes az IR-ből származó gráfokból LLVM, OpenCL, OpenGL, CUDA és Metal kódot generálni melyek a megfelelő hardveren futtathatóak. Így egy magas szintű keretrendszerben írt neurális háló lefordul Intel és AMD processzrokon valamint grafikus processzorokon, az nVidia processzorain, továbbá az Apple cég által feljelsztett eszközökön.
 
@@ -104,17 +104,99 @@ Az alábbiak alapját az Intel OpenVINO eszközkészletének dokumentációja ad
 
 Az OpenVINO eszközkészlet alkalmas arra, hogy gyorsan készítsünk olyan alkalmazásokat, melyek valamilyen módon emulálják az emberi látást. Képesek vagyunk segítségével az NCS2-n kívül más Intel gyártmányú hardverrel dolgozni, például Intel CPU-n és integrált GPU-n. Továbbá népszerű keretrendszereket támogat, mint a TensorFlow, Caffe, MXNet vagy az ONNX. Az eszközkészlet komponensekei közül az alábbiakat emelném ki:
 \begin{description}[noitemsep]
-	\item[Inference Engine] python API, aminek segítségével különböző gyorsítókártyák megszólíthatók egységes módon.
-	\item[Model Optimizer] parancssoros alkalmazás mentett modellek átkonvertálására. Ahhoz, hogy a különböző keretrendszerekben megalkotott modelleket egységesen tudja kezelni az Inference Engine, szükség van azok átkonvertálására egy platformfüggetlen struktúrába.
+	\item[Inference Engine] Python API, aminek segítségével különböző gyorsítókártyák megszólíthatók egységes módon.
+	\item[Model Optimizer] parancssoros alkalmazás modelleket definiáló állományok átkonvertálására. Ahhoz, hogy a különböző keretrendszerekben megalkotott modelleket egységesen tudja kezelni az Inference Engine, szükség van azok átkonvertálására egy platformfüggetlen struktúrába.
 	\item[OpenCV] az OpenCV közösségi fejlesztésű verziójának Intel hardverekre fordított változata.
 \end{description}
 
 Az OpenVINO-val való munka folyamatának három fő lépése van:
 \begin{enumerate*}[label={}, font=\bfseries]
-	\item Betanított Neurális hálózat beszerzése;
+	\item Betanított Neurális hálózat beszerzése vagy implementálása;
 	\item a hálózat átkonvertálása a Model Optimizer-rel;
-	\item python szkript implementálása az Inference Engine-t tartalmazó modulokkal, melyben az átkonvertált fájlokat lefuttatjuk a célhardveren
+	\item Inference Engine-re épülő program implementálása, mely beolvassa az átkonvertált állományokat és átadja a neurális hálózat modelljét a célhardvernek;
 \end{enumerate*}
+
+\subsubsection{Modell átkonvertálása}
+Mint már korábban említettem a platform különböző neurális hálózatok implementálására kifejlesztett keretrendszereket támogat. Ezek a keretrendszerek képesek a definiált és betanított hálózatokat valamilyen állomány formátumban elmenteni. Hogy ezeket az állományokat minden gyorsító eszközön egységesen legyen képes kezelni az \emph{Inference Engine} szükséges az állományokat átkonvertálni a \emph{Model Optimizer} segítségével. Ez egy Python-ban írt kereszt-platformos parancssoros alkalmazás, mely a beolvasott modell állományokban tárolt hálózatot elmenteni egy \emph{közbenső reprezentációvá}\footnote{Intermediate Representation (IR)}, melyre a továbbiakban \emph{IR-ként} fogok hivatkozni. Az átkonvertálás során a Model Optimizer analizálja a modellt\footnote{betanított, kvázi használatra kész neurális hálózat} és olyan korrekciókat hajt végre rajta, hogy optimális módon hajtódjon végre az egyes gyorsítókon. 
+
+Egy TensorFlow-ban implementált neurális hálózat átkonvertáláshoz az alábbi lépéseket kell végrehajtani:
+\paragraph*{Model Optimizer konfigurációja}
+	Az alkalmazás előre elkészített szkriptekkel települ a különböző keretrendszerekhez történő konfigurációhoz. A szkriptek a \url{<főkönyvtár>/deployment_tools/model_optimizer/install_prerequisites} könyvtárban találhatóak. TensorFlow-val való munkához az \verb|install_prerequisites_tf.sh| -- Windows operációs rendszeren ugyanezen fájlnéven \verb|.bat| kiterjesztéssel -- konfigurációs szkriptet kell lefuttatni.
+
+\paragraph*{TensorFlow modell befagyasztása}
+	Ez egy keretrendszer specifikus lépés. Amikor Python-ban definiáljuk a hálózatot, rendszerint elmentjük azt egy \emph{inference graph} fájlban. Ez általában olyan módon történik, hogy a hálózat tanítható marad, tehát annak paraméterei, mint változók tárolva vannak az állományban. A Model Optimizer csak úgy tud dolgozni ezen az állományon, ha az úgymond be van \emph{fagyasztva}. A keretrendszerben befagyasztott modell kimentésének műveletét a következő kódrészlet mutatja:
+	\begin{lstlisting}[language=Python]
+	import tensorflow as tf
+	from tensorflow.python.framework import graph_io
+	
+	frozen = tf.graph_util.convert_variables_to_constants(sess, sess.graph_def, ["output_node"])
+	graph_io.write_graph(frozen, './', 'model.pb', as_text=False)
+	\end{lstlisting}
+	ahol:
+	\begin{description}
+		\item[\PVerb{sess}] egy TensorFlow \verb|Session| példánynak a referenciaváltozója
+		\item[\PVerb{["output\_node"]}] a kimeneti csomópontok nevének listája. Egy befagyasztott hálózat csak azokat a csomópontokat fogja tartalmazni a az eredeti \verb|sess.graph_def|;
+		\item[\PVerb{'model.pb'}] a létrehozandó modell fájl neve;
+		\item[\PVerb{as\_text}] boolean típusú változóval megadható, hogy a \verb|write_graph| metódus a bináris vagy karakteres formátumban írja ki a gráfot.
+	\end{description}
+
+\paragraph*{Modell átkonvertálása}
+	Ennél a pontnál használjuk a Model Optimizer-t, azaz ekkor történik meg a konverzió. Az alkalmazás a \url{<főkönyvtár>/deployment_tools/model_optimizer} könyvtárba települ. Hogy a \verb|model.pb| állományunkat átkonvertáljuk a következő parancsot kell kiadni:
+	\begin{verbatim}
+		python3 mo_tf.py --input_model model.pb
+	\end{verbatim}
+	A kimenet maga az IR, két állomány: egy xml kiterjesztésű fájl, amiben a hálózat topológiája van definiálva és egy bináris fájl, ami a hálózat paramétereit -- súlyait és küszöbértékeit -- tartalmazza. 
+	A program további argumentumaival specializálhatjuk a konvertálás folyamatát.
+
+\subsubsection{Inference Engine}
+Az OpenVINO eszközkészlet tartalmaz egy futtatókörnyezetet az \emph{Inference Engine-t}, egy programkönyvtár csomagot melynek központi része a \verb|libinference_engine.so|\footnote{Windows operációs rendszeren természetesen .dll kiterjesztésű és a fájlnév nem tartalmazza a "lib" karaktersort és ez igaz a többi programkönyvtár elnevezésére is} könyvtár. A könyvtárcsomag C++ nyelven íródott, és programozói interfésze ehhez, továbbá Python nyelvhez készült. Az utóbbihoz készült API szerényebb funkcionalitással bír. Feladati az IR-ben tárolt modell beolvasása, az inferencia optimalizálása a célhardveren történő végrehajtáshoz  és annak futtatása. A hardvercsoportokkal történő kommunikációs eljárások külön programkönyvtárakba -- ahogy a dokumentáció hivatkozik rájuk \emph{pluginokba} -- lettek szervezve.
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ p{0.25\textwidth} | p{0.75\textwidth} }
+		GPU plugin\\(libclDNNPlugin.so)& Intel HD Graphics és Intel Iris Graphics  \\ \hline
+		CPU plugin\\(libMKLDNNPlugin.so)& Intel Xeon AVX2 és AVX512 utasításkészlettel, Intel Core AVX2 utasításkészlettel, Intel Atom SSE utasítással \\ \hline
+		FPGA plugin\\(libdliaPlugin.so)& Intel Vision Accelerator %Design?
+		eszköz Intel Arria 10 FPGA-val (Speed Grade 1 és 2), Intel Programmable Acceleration kártya Intel Arria 10 GX FPGA-val \\ \hline
+		VPU plugin\\(libmyriadPlugin.so)& NCS és NCS2, Intel Vision Accelerator %Design?
+		eszközök Myraid processzorral\\ \hline
+		GNA plugin\\(libGNAPlugin.so)& Intel Speech Enabling Developer Kit, Amazon Alexa Premium Far-Field Developer Kit, Intel Pentium Silver J5005, Intel Celeron J4005, Intel Core i3-8121U \\ \hline
+		Multi-Device plugin\\(libMultiDevicePlugin.so)& egy modell több eszközön történő parallel inferenciájára\\ \hline
+		Heterogenous plugin\\(libHeteroPlugin.so)& modell automatikus szétosztása több eszközre (akkor szükséges, ha néhány hálózati réteg típust nem minden eszköz támogat)
+	\end{tabular}
+	\caption{Plugin típusok és támogatott hardverek}
+	\label{table:IEplugins}
+\end{table}
+
+Az Inference Engine használatával Python nyelven ismerkedtem meg, így alább ezen nyelvi API használatát mutatom be. Az interfészt a következő osztályok szolgálatatják:
+\begin{description}[noitemsep]
+	\item[\PVerb{ExecutableNetwork}] osztály reprezentál egy modell példányt, amit betöltöttük a pluginba és készen áll az inferenciára;
+	\item[\PVerb{IECore}] egy Inference Engine objektum. Segítségével egy egységes interfészen keresztül kezelhetjük a pluginokat;
+	\item[\PVerb{IENetLayer}] tartalmazza a főbb információkat a modell rétegeiről, továbbá eszköz a rétegek néhány paraméterének módosításához;
+	\item[\PVerb{IENetwork}] minden információt tartalmaz az IR fájlokból beolvasott modellről, és annak paramétereinek módosítását teszi lehetővé;
+	\item[\PVerb{IEPlugin}] a plugin-ok fő interfésze. Célja, hogy inicializálja és bekonfigurálja a plugin-t;
+	\item[\PVerb{InferRequest}] egy interfészt kínál az inferencia futtatásának kérésére az  \verb|ExecutableNetwork| osztályon keresztül, továbbá kezeli az inferencia végrehajtását és a kapott adatokat;
+	\item[\PVerb{InputInfo}] a modell bemeneti rétegének tulajdonságait tartalmazza: \verb|layout| karaktersorozat, a (bemeneti) tenzor elrendezése\footnotemark, \verb|shape| szám n-es a tenzor alakja, \verb|precision| az adatok számábrázolás szerinti típusa;
+	\footnotetext{Elrendezés: a tenzorként reprezentált minták tömbjében az adatok milyen elrendezésben szerepelnek. Például egy képfeldolgozáshoz használt hálózat bemeneti rétege esetén az 'NHWC' elrendezés azt jelenti, hogy a beolvasott tömb 1. tengelye mentén a mintákon(sample Number) való bejárást, 2. és 3. tengelye mentén a magassági(Height) és szélességi(Width), negyedik tengelye mentén a színcsatornák(Channel) szerinti bejárást végezhetünk}%\enlargethispage{-\baselineskip}
+	\item[\PVerb{LayersStatsMap}] a Python \verb|dict| osztályának leszármaztatása, mely újraimplementálja a \verb|update()| metódust, hogy módosítható legyen a rétegek finomhangolásának statisztikái;
+	\item[\PVerb{LayerStats}] a rétegek finomhangolási statisztikáinak konténere;
+	\item[\PVerb{OutputInfo}] a modell bemeneti rétegének tulajdonságait tartalmazza hsonlóan az \verb|InputInfo| osztályhoz;
+\end{description}
+
+Egy elemi alkalmazás implementációjához, mely inferenciát végez az NCS2 eszközön szükség van az \verb|IENetwork| és \verb|IECore| vagy \verb|IEPlugin| osztályokra továbbá létrejön egy \verb|ExecutableNetwork| egyed, amivel az inferenciát elvégeztetjük. A modell feltöltése az eszközre, majd az inferencia futtatása a \ref{lst:IEPython} kód szerint tehető meg.
+\begin{minipage}{\textwidth}
+	\begin{lstlisting}[language=Python,caption=Inference Engine használata PYthon-ból ]
+from openvino.inference_engine import IENetwork, IEPlugin
+net = IENetwork(model= '<dir>/model.xml', weights= '<dir>/model.bin')
+plugin = IEPlugin(device= 'MYRIAD')
+exec_net = plugin.load(network= net)
+i_layer_key = list(net.inputs.keys())[0]
+
+if net.inputs[i_layer_key].shape == list(samples.shape) :
+	res = exec.net.infer(inputs={i_layer_key : samples})
+	\end{lstlisting}\label{lst:IEPython}
+\end{minipage}
+%A model.xml fájl több input réteget is tartalmazhat (type="Input"), ezért az IENetwork inputs mezeje egy olyan dict, aminek kulcsa az input rétegek "name" mezejével, azaz a nevével egyezik, az érték pedig egy InputInfo objektum
+Az \verb|IEPlugin| rendelkezik egy \verb|load()| metódussal, mely egy \verb|IENetwork| objektumtól megkapja a hálózat adatait és példányosít egy \verb|ExecutableNetwork| egyedet. Ezen objektum \verb|infer()| metódusával végeztethetjük az inferenciát. A metódusnak át kell adni egy táblázatot (Python \verb|dict| osztály) melynek kulcsértékei a bemeneti rétegek nevei (ez egyezik az IENetwork inputs attribútumának kulcsával), a kulcsokhoz rendelt értékek pedig a minták megfelelő alakú, \verb|numpy.ndarray| típusú tenzora. A \verb|res| változó szintén egy táblázat lesz, amiben a kimeneti rétegek neveihez, mint kulcsokhoz van rendelve az inferencia eredménye.
 
 \section{Google Edge TPU}
 Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejlesztő panelt, mély tanulást alkalmazó projektekhez. A Google Edge TPU-ról és a Coral USB Accelerator-ról a Heartbeat internetes magazinban megjelent cikkben értesültem.\cite{web:GoogleEdge} A Google TPU-ról szerzett ismereteim a wikipédia ,,Tensor Processing unit'' cikkéből szereztem.\cite{wiki:TPU}
@@ -136,7 +218,7 @@ Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejleszt
 
 A Google a Tensor Processing Unit\texttrademark-ot, egy saját fejlesztésű alkalmazásspecifikus integrált áramkört használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezek lényegében mátrix műveletekre számítására fejlesztett processzorok CISC utasításkészlettel. Három generációt ért meg, az első még csak 8-bites egészeken tudott műveleteket végezni, azonban már a második generáció képes volt lebegőpontos számításokra is. A Tensor processing unit-okkal felszerelt gyorsítókártyákat a Google saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a konvolúció és az \ref{sect:neuralNetworkTheory} alfejezetben tárgyalt aktváló függvények alkalmazása a mátrix szorzáson túl.
 
-Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méretben és energiafogyasztásban. Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzor. Azzal összehasonlítva viszont képes neurális hálózatok tanítására is korlátozott mértékben. Az Edge TPU részét képezi a Google Coral eszközkészletének, mellyel alternatívát nyújtanak a felhőalapú Cloud AI szolgáltatással szemben. A Coral különböző fajtájú hardvert nyújt a felhasználóknak, mindegyik központi eleme az Edge TPU. Az eszköz programozásához használható API-t az Edge TPU python könyvtár (\verb|edgetpu| python modul) valósítja meg, amely képes TensorFlow Lite-ban alkotott betanított neurális hálózatok futtatására. A könyvtár kulcsfontosságú interfészeit a következő osztályok képezik.Képosztályozási feladatokhoz a \verb|ClassificationEngine| használatos, vizuális objektumazonosításra a \verb|DetectionEngine|. Az \verb|ImprintingEngine| és \verb|SoftmaxRegression| az ún. \emph{transzfer tanuláshoz} alkalmazható, vagyis előre betanított hálózatok a feladatnak megfelelő újratanítását végezhetjük el vele.
+Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méretben és energiafogyasztásban. Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzor. Azzal összehasonlítva viszont képes neurális hálózatok tanítására is korlátozott mértékben. Az Edge TPU részét képezi a Google Coral eszközkészletének, mellyel alternatívát nyújtanak a felhőalapú Cloud AI szolgáltatással szemben. A Coral különböző fajtájú hardvert nyújt a felhasználóknak, mindegyik központi eleme az Edge TPU. Az eszköz programozásához használható API-t az Edge TPU Python könyvtár (\verb|edgetpu| Python modul) valósítja meg, amely képes TensorFlow Lite-ban alkotott betanított neurális hálózatok futtatására. A könyvtár kulcsfontosságú interfészeit a következő osztályok képezik.Képosztályozási feladatokhoz a \verb|ClassificationEngine| használatos, vizuális objektumazonosításra a \verb|DetectionEngine|. Az \verb|ImprintingEngine| és \verb|SoftmaxRegression| az ún. \emph{transzfer tanuláshoz} alkalmazható, vagyis előre betanított hálózatok a feladatnak megfelelő újratanítását végezhetjük el vele.
 
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
