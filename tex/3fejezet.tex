@@ -9,10 +9,8 @@ A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngra
 Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez.
 Legszembetűnőbb tulajdonsága, hogy képes többféle hardver architektúrán futtatni és beépíthető számos keretrendszerbe.
 Ezek azok a jellemzők, amiket kerestünk témavezetőmmel, hogy mély tanulást tudjunk végeztetni hatékonyan a \emph{HuSSar-on}. 
-Ezen túlmenően a jövőbeli fejlesztések az iparban egyre jelentősebben igényelik, hogy a modern MI rendszerek skálázhatóak legyenek, mert egyrészt a neurális hálók egyre komplexebbé válnak, másrészt az általuk feldolgozott adatok mennyisége is rohamosan növekszik.
-
-Jelenleg két bevett gyakorlat van a mély tanulás felgyorsítására:
-\begin{enumerate}
+Ezen túlmenően a jövőbeli fejlesztések az iparban egyre jelentősebben igényelik, hogy a modern MI rendszerek skálázhatóak legyenek, mert egyrészt a neurális hálók egyre komplexebbé válnak, másrészt az általuk feldolgozott adatok mennyisége is rohamosan növekszik. Jelenleg két bevett gyakorlat van a mély tanulás felgyorsítására:
+\begin{enumerate}[noitemsep]
 	\item \textbf{Dedikált hardver tervezése a mély tanulással kapcsolatos számításokhoz} -- Sok vállalkozás tervez \emph{Alkalmazásspecifikus integrált áramköröket} (ASIC) neurális hálózatok betanítására és futtatására.
 	\item \textbf{Szoftver optimalizáció} -- Programkönyvtárakat tartalmazó fejlesztési keretrendszerek fejlesztése, melyek képesek a hálózatokkal kapcsolatos számításokat több szálon, optimalizáltan futtatni. Az nGraph, mint fordító is egy ilyen megoldás.
 \end{enumerate}
@@ -73,10 +71,7 @@ Ez a szám a processzor architektúrák számán (h), adattípusokon (t), művel
 
 Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnote{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő algoritmusokat tudjunk hatékonyan programozni}, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{github:PlaidML}\cite{web:PlaidML}
 
-
-Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform független IR-rel igyekszik orvolsoni a skálázható backend-el kapcsolatos kihívást. A PlaidML ezt megtámogatja azzal, hogy képes az IR-ből származó gráfokból LLVM, OpenCL, OpenGL, CUDA és Metal kódot generálni melyek a megfelelő hardveren futtathatóak. Így egy magas szintű keretrendszerben írt neurális háló lefordul Intel és AMD processzrokon valamint grafikus processzorokon, az nVidia processzorain, továbbá az Apple cég által feljelsztett eszközökön.
-
-Az nGraph gráf szintű optimalizációját ráadásul kiegészíti automatikusan a PlaidML alacsonyabb szinten, ezzel teljesítmény növekedést érve el.
+Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform független IR-rel igyekszik orvolsoni a skálázható backend-el kapcsolatos kihívást. A PlaidML ezt megtámogatja azzal, hogy képes az IR-ből származó gráfokból LLVM, OpenCL, OpenGL, CUDA és Metal kódot generálni melyek a megfelelő hardveren futtathatóak. Így egy magas szintű keretrendszerben írt neurális háló lefordul Intel és AMD processzrokon valamint grafikus processzorokon, az nVidia processzorain, továbbá az Apple cég által feljelsztett eszközökön. Az nGraph gráf szintű optimalizációját ráadásul kiegészíti automatikusan a PlaidML alacsonyabb szinten, ezzel teljesítmény növekedést érve el.
 
 Összegzésül tehát az nGraph feldarabolja a neurális hálózathoz tartozó számítási gráfot processzor architektúrának megfelelően, majd ezen gráfokat a PlaidML lefordítja a megfelelő kódokra, melyeket aztán a célprocesszorokra lefordítunk és futtatunk.
 
@@ -97,7 +92,6 @@ Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel haszná
 	\caption{Neural Compute Stick 2 gyorsító} 
 	\label{fig:ncs2-specs}
 \end{figure}
-%TODO Nincs Befejezve
 
 \subsection{Az NCS2 használata OpenVINO keretrendszerben}
 Az alábbiak alapját az Intel OpenVINO eszközkészletének dokumentációja adja.\cite{web:OpenVINO} A dokumentációban a felépített neurális hálózatokra modell néven hivatkoznak, amit most én is átveszek.
@@ -152,16 +146,16 @@ Egy TensorFlow-ban implementált neurális hálózat átkonvertáláshoz az alá
 Az OpenVINO eszközkészlet tartalmaz egy futtatókörnyezetet az \emph{Inference Engine-t}, egy programkönyvtár csomagot melynek központi része a \verb|libinference_engine.so|\footnote{Windows operációs rendszeren természetesen .dll kiterjesztésű és a fájlnév nem tartalmazza a "lib" karaktersort és ez igaz a többi programkönyvtár elnevezésére is} könyvtár. A könyvtárcsomag C++ nyelven íródott, és programozói interfésze ehhez, továbbá Python nyelvhez készült. Az utóbbihoz készült API szerényebb funkcionalitással bír. Feladati az IR-ben tárolt modell beolvasása, az inferencia optimalizálása a célhardveren történő végrehajtáshoz  és annak futtatása. A hardvercsoportokkal történő kommunikációs eljárások külön programkönyvtárakba -- ahogy a dokumentáció hivatkozik rájuk \emph{pluginokba} -- lettek szervezve.
 \begin{table}[h]
 	\centering
-	\begin{tabular}{ p{0.25\textwidth} | p{0.75\textwidth} }
-		GPU plugin\\(libclDNNPlugin.so)& Intel HD Graphics és Intel Iris Graphics  \\ \hline
-		CPU plugin\\(libMKLDNNPlugin.so)& Intel Xeon AVX2 és AVX512 utasításkészlettel, Intel Core AVX2 utasításkészlettel, Intel Atom SSE utasítással \\ \hline
-		FPGA plugin\\(libdliaPlugin.so)& Intel Vision Accelerator %Design?
+	\begin{tabular}{ p{0.3\textwidth} | p{0.63\textwidth} }
+		GPU plugin\\(libclDNNPlugin.so) & Intel HD Graphics és Intel Iris Graphics  \\ \hline
+		CPU plugin\\(libMKLDNNPlugin.so) & Intel Xeon AVX2 és AVX512 utasításkészlettel, Intel Core AVX2 utasításkészlettel, Intel Atom SSE utasítással \\ \hline
+		FPGA plugin\\(libdliaPlugin.so) & Intel Vision Accelerator %Design?
 		eszköz Intel Arria 10 FPGA-val (Speed Grade 1 és 2), Intel Programmable Acceleration kártya Intel Arria 10 GX FPGA-val \\ \hline
-		VPU plugin\\(libmyriadPlugin.so)& NCS és NCS2, Intel Vision Accelerator %Design?
+		VPU plugin\\(libmyriadPlugin.so) & NCS és NCS2, Intel Vision Accelerator %Design?
 		eszközök Myraid processzorral\\ \hline
-		GNA plugin\\(libGNAPlugin.so)& Intel Speech Enabling Developer Kit, Amazon Alexa Premium Far-Field Developer Kit, Intel Pentium Silver J5005, Intel Celeron J4005, Intel Core i3-8121U \\ \hline
-		Multi-Device plugin\\(libMultiDevicePlugin.so)& egy modell több eszközön történő parallel inferenciájára\\ \hline
-		Heterogenous plugin\\(libHeteroPlugin.so)& modell automatikus szétosztása több eszközre (akkor szükséges, ha néhány hálózati réteg típust nem minden eszköz támogat)
+		GNA plugin\\(libGNAPlugin.so) & Intel Speech Enabling Developer Kit, Amazon Alexa Premium Far-Field Developer Kit, Intel Pentium Silver J5005, Intel Celeron J4005, Intel Core i3-8121U \\ \hline
+		Multi-Device plugin\\(libMultiDevicePlugin.so) & egy modell több eszközön történő parallel inferenciájára\\ \hline
+		Heterogenous plugin\\(libHeteroPlugin.so) & modell automatikus szétosztása több eszközre (akkor szükséges, ha néhány hálózati réteg típust nem minden eszköz támogat)
 	\end{tabular}
 	\caption{Plugin típusok és támogatott hardverek}
 	\label{table:IEplugins}
@@ -196,7 +190,8 @@ if net.inputs[i_layer_key].shape == list(samples.shape) :
 	\end{lstlisting}\label{lst:IEPython}
 \end{minipage}
 %A model.xml fájl több input réteget is tartalmazhat (type="Input"), ezért az IENetwork inputs mezeje egy olyan dict, aminek kulcsa az input rétegek "name" mezejével, azaz a nevével egyezik, az érték pedig egy InputInfo objektum
-Az \verb|IEPlugin| rendelkezik egy \verb|load()| metódussal, mely egy \verb|IENetwork| objektumtól megkapja a hálózat adatait és példányosít egy \verb|ExecutableNetwork| egyedet. Ezen objektum \verb|infer()| metódusával végeztethetjük az inferenciát szinkron módon. Lehetőség van aszinkron üzemmódra az \verb|async_infer()| metódussal. Mindkét metódusnak át kell adni egy táblázatot (Python \verb|dict| osztály) melynek kulcsértékei a bemeneti rétegek nevei (ez egyezik az IENetwork inputs attribútumának kulcsával), a kulcsokhoz rendelt értékek pedig a minták megfelelő alakú, \verb|numpy.ndarray| típusú tenzora. A \verb|res| változó szintén egy táblázat lesz, amiben a kimeneti rétegek neveihez, mint kulcsokhoz van rendelve az inferencia eredménye. 
+Az \verb|IEPlugin| rendelkezik egy \verb|load()| metódussal, mely egy \verb|IENetwork| objektumtól megkapja a hálózat adatait és példányosít egy \verb|ExecutableNetwork| egyedet. Ezen objektum \verb|infer()| metódusával végeztethetjük az inferenciát szinkron módon. Lehetőség van aszinkron üzemmódra az \verb|async_infer()| metódussal. Mindkét metódus használata esetén át kell adni egy táblázat típusú paramétert (Python \verb|dict| osztály) melynek kulcsértékei a bemeneti rétegek nevei (ez egyezik az IENetwork inputs attribútumának kulcsával), a kulcsokhoz rendelt értékek pedig a minták megfelelő alakú, \verb|numpy.ndarray| típusú tenzora. A \verb|res| változó szintén egy táblázat lesz, amiben a kimeneti rétegek neveihez, mint kulcsokhoz van rendelve az inferencia eredménye. 
+
 
 \section{Google Edge TPU}
 Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejlesztő panelt, mély tanulást alkalmazó projektekhez. A Google Edge TPU-ról és a Coral USB Accelerator-ról a Heartbeat internetes magazinban megjelent cikkben értesültem.\cite{web:GoogleEdge} A Google TPU-ról szerzett ismereteim a wikipédia ,,Tensor Processing unit'' cikkéből szereztem.\cite{wiki:TPU}
@@ -215,12 +210,72 @@ Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejleszt
 	\label{fig:coralusbaccelerator}
 \end{figure*}
 
-
 A Google a Tensor Processing Unit\texttrademark-ot, egy saját fejlesztésű alkalmazásspecifikus integrált áramkört használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezek lényegében mátrix műveletekre számítására fejlesztett processzorok CISC utasításkészlettel. Három generációt ért meg, az első még csak 8-bites egészeken tudott műveleteket végezni, azonban már a második generáció képes volt lebegőpontos számításokra is. A Tensor processing unit-okkal felszerelt gyorsítókártyákat a Google saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a konvolúció és az \ref{sect:neuralNetworkTheory} alfejezetben tárgyalt aktváló függvények alkalmazása a mátrix szorzáson túl.
 
 Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méretben és energiafogyasztásban. Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzor. Azzal összehasonlítva viszont képes neurális hálózatok tanítására is korlátozott mértékben. Az Edge TPU részét képezi a Google Coral eszközkészletének, mellyel alternatívát nyújtanak a felhőalapú Cloud AI szolgáltatással szemben. A Coral különböző fajtájú hardvert nyújt a felhasználóknak, mindegyik központi eleme az Edge TPU. Az eszköz programozásához használható API-t az Edge TPU Python könyvtár (\verb|edgetpu| Python modul) valósítja meg, amely képes TensorFlow Lite-ban alkotott betanított neurális hálózatok futtatására. A könyvtár kulcsfontosságú interfészeit a következő osztályok képezik.Képosztályozási feladatokhoz a \verb|ClassificationEngine| használatos, vizuális objektumazonosításra a \verb|DetectionEngine|. Az \verb|ImprintingEngine| és \verb|SoftmaxRegression| az ún. \emph{transzfer tanuláshoz} alkalmazható, vagyis előre betanított hálózatok a feladatnak megfelelő újratanítását végezhetjük el vele.
 
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
+
+Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  gyorsítóit, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I).
+
+\subsection[NNP-T]{Neural Network Processor for Training}
+Az NNP-T egy egylapkás rendszer vagy rendszerchip, melynek fejlesztésénél fontos szempont volt az egyensúly a számítási teljesítmény, a perifériák közötti kommunikáció  sebessége és memória használat között. Ezt támogatja 
+a lapka memóriájába már betöltött adatok minél hatékonyabb újrafelhasználásának elősegítése, továbbá a kötegelt adatfeldolgozás optimalizálása. Könnyen skálázható rendszert lehet építeni belőle, ugyanis ezt beépített megoldások segítik. A mély tanulás területén megfigyelhető trendek figyelembevételével tervezték, hogy a jövőbeli munkafolyamatokat is támogassa.
+%TODO utolsó mondatot lehet nem kéne erőltetni
+
+\subsubsection{Hardver tulajdonságai}
+\paragraph[Soc]{Rendszerchip}
+A chip 4. generációs 16 sávos PCIe végponttal rendelkezik. A nagy memóriakapacitás lehetőségéet lapkán 4 darab HBM2\footnote{High Bandwidth Memory: DRAM modulok térben egymásra pakolását alkalmazó RAM interfész típus. HBM2 esetén a legnagyobb kapacitás 8GB lehet egy tokban. Leginkább videó kártyákban használatos } memória foglalattal oldották meg. 
+%64 lanes SerDes
+A számításokat 24 darab tenzor processzormag végzi(TPC), és a vállalat szerint összesen 119 tenzor számítást képesek végezni másodpercenként.A lapkán elhelyeztek 60 MB osztott memóriát is, továbbá egy menedzsment processzort.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{NNP-T_soc}
+	\caption[SoC]{Az NNP-T egylapkás rendszer (SoC) felépítése\\ forrás:}
+	\label{fig:nnp-tsoc}
+\end{figure}
+
+\paragraph{Tenzor processzor (TPC)}
+Egy TPC magon belül két darab mátrixszorzó egység van, melyek egyenként 32$\times$32-es méretű mátrixok tud szorzást végezni, a konvolúció műveletet pedig külön egység végzi. Minden mag továbbá rendelkezik 2,5 MB Cache memóriával, melyek sávszélessége 1.4TB/s.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{tensor-processing-cluster_TPC}
+	\caption[TPC]{Egy TPC felépítése\\ forrás:\cite{dia}}
+	\label{fig:TPC}
+\end{figure}
+
+\paragraph{hardverkártya tulajdonságai}
+%TSMC CLN16FF+
+%680mm 2 , 1200mm 2 interposer
+%27 Billion Transistors
+Az Intel az NNP-T egyedi PCIe és OAM kártyán fogja forgalmazni, melyre egy rendszerchipet szerelnek összesen 32 gigabájt HBM2-2400 típusú memóriával -- melynek elméleti sávszélessége 1,22TB/s -- BGA tokozásban.
+A rendszerchip órajele az 1,1GHz-et is elérheti. A kártya 4. generációs PCI Express x16, valamint SPI, I2C csatolófelülettel és általános célú I/O kivezetéssel rendelkezik. A központi egység léghűtésű átlagos használat esetén 150 és 250W közötti fogyasztással.
+%64 lanes SerDes HSIO up to 3.58Tbps aggregate BW
+
+\subsubsection{Szoftver fejlesztés}
+teljes fejlesztői szoftverkészlet nyílt forrású komponensekkel
+%nGraph: Hardware agnostic deep learning library and compiler for DL platform developers. -> Provides common set of optimizations for NNP-T across DL frameworks
+Argon: NNP-T DNN compute and communication kernel library
+Low-level programmability: NNP-T kernel development toolchain w/tensor compiler
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{nnp-t_softwares}
+	\caption[Szoftverek]{A fejlesztésnél használható szoftveregyüttes}
+	\label{fig:nnp-tSwStack}
+\end{figure}
+
+\subsubsection{NNP-T Programozási modell}
+ Rugalmas és programozható tenzor alapú utasításkészlet architektúra
+	korlátozott méretű utasításkészlet
+	bővíthető uController utasításokkal
+ Ugyanazt a programozási modellt kell alkalmazni lapkán belüli és lapkák közötti folyamatok programozására
+ A mély tanulást alkalmazó munkafolyamatokat az utasítások egy kis csoportja végzi
+Bfloat16 típuskezelés (IEEE 754 félszeres pontosságtól annyiban tér el, hogy az exponens 5 helyett 8 bites): jól konvergál tanításkor és memória hely takarékosis egyben
+
+\subsection[NNP-I]{Neural Network Processor for Inference}
+% 4.8 TOPs wattonkánt
+% 
+
 
 %TODO Nincs Befejezve
