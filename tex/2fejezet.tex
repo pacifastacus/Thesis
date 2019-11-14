@@ -33,7 +33,7 @@ Mindkét réteghez tartozik egy \emph{activation} paraméter, mely string típus
 A \verb|Keras.layers| modulban A \verb|Dense| osztályon kívül implementálva vannak konvolúciós, összefésülő, zaj, stb. rétegek, melyek a fenti módon tetszés szerint egymásra szervezhetőek a keretrendszerben, így szinte tetszőleges hálózat alakítható ki.
 
 \subsection{Hálózat betanítása és inferencia futtatása}
-
+\label{subsect:inference}
 A megalkotott hálózatot a \verb|network| objektum definiálja. Hogy tanítható legyen el kell látni egy optimizálóval és egy veszteségfüggvénnyel, melyek együtt adják a hálózatot betanító algoritmust. A \verb|compile()| metódus ,,összerakja'' a neurális hálózatot a betanítóval, a \verb|fit()| pedig elvégzi a tanítást, és \emph{epoch}-ok számának megfelelő méretű tömböket tartalmazó objektum referenciájával tér vissza, mely tömbökben össze vannak gyűjtve a veszteségfüggvény értékei és a felhasználói metrikák eposzonként. 
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[language=Python,caption=Hálózat betanítása]
@@ -58,5 +58,18 @@ A \verb|train_datas| és \verb|train_labels| a tanítókészletet alkotó mintá
 
 \subsection{Hatékonyságvizsgálat}
 
-
+A tanítás felügyeletére a tanításhoz rendelkezésre álló adatok egy részét külön kell választanunk a tanítókészlettől. Ez a készlet lesz a validálási készletünk, mellyel minden tanítási ciklus végén leellenőrizzük, hogy hogyan teljesít a hálózat olyan adaton, amit még ,,nem látott''. A validálást Keras-ban megtehetjük a tanítással egy lépésben, a \verb|fit()| algoritmussal, ha a \verb|validation_data| opcionális paraméterének megadunk egy \verb|(data, label)| \verb|tuple| típusú változót. Ekkor a metódus olyan referenciával tér vissza (\ref{lst:fitNetwork}~kódrészletben ez a \verb|history|), melyen keresztül a tanítási és validálás statisztikák is beolvashatóak. A \ref{subsect:inference}~szakaszban említett metrikák a validálási folyamathoz is rögzítve lesznek. 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\includegraphics[width=\textwidth]{fig/accuracy.pdf}
+		\label{fig:plotacc}
+	\end{subfigure}
+	\quad
+	\begin{subfigure}{0.45\textwidth}
+		\includegraphics[width=\textwidth]{fig/loss.pdf}
+		\label{fig:plotloss}
+	\end{subfigure}
+	\caption{Példa kimutatás a Keras által gyűjtött statisztikákról}
+\end{figure}
 %TODO Nincs Befejezve

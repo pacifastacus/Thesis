@@ -188,7 +188,7 @@ Ahol $\gamma$ az ún. felejtési tényező amivel szabályozhatjuk, hogy mekkora
 A hálózat paramétereit a következőképpen frissítjük:
 $$ W_{i+1} = W_i - \frac{\eta}{\sqrt{v(w_,y)}} \nabla C(W_i) $$
 
-
+Tanítás során a veszteségfüggvény sztochasztikusan konvergál a nullához és ezzel együtt a hálózat egyre pontosabban következtet a tanító készlet adataiból. A tapasztalat azonban az, hogy ez nem feltétlenül igaz más, a tanítás során nem használt adatokra, sőt elérkezhet a hálózat egy olyan állapotba, amikor a használat közben rosszabbul teljesít, mint a tanítás végén. Ilyenkor a hálózat specializálódik a tanító adathalmazra végső esetben akár az egyes adatpontokra a hipotézis téren. Ezt a jelenséget, amikor a hálózat jobban következtet a tanítás során használt adathalmazon \emph{túlilleszkedésnek} nevezzük és \emph{alul-illeszkedésnek} azt, mikor a hálózat nem generalizál elég jól, más szóval túl kevés tanítási cikluson esett még át. Hogy a hálózat a hipotézis térből a megfelelő függvények -- nem törekszünk az adatok egy tökéletes leképezésére -- valamelyikét modellezze, szükséges a tanítást felügyelni, hogy az ne illeszkedjen se túl, se alul.
 %TODO Nincs Befejezve
 \subsection{A kernel-trükk}
 
