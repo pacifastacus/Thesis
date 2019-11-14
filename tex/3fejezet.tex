@@ -217,7 +217,7 @@ Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méret
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
 
-Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  gyorsítóit, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I).
+Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  rendszerchipeket, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I). Mint nevük is mutatja ezek kifejezetten mély tanulás gyorsításra lettek fejlesztve és úgy tervezték őket, hogy jól skálázható rendszert alkossanak. Ezeket a hardvereket a konferencián elmondottak alapján mutatnám be.\cite{yt:nnpt}\cite{yt:nnpi} Ebben az alfejezetben szereplő ábrák a konferencián levetített fóliákból származnak.\cite{slide:nnpt}\cite{slide:nnpi}
 
 \subsection[NNP-T]{Neural Network Processor for Training}
 Az NNP-T egy egylapkás rendszer vagy rendszerchip, melynek fejlesztésénél fontos szempont volt az egyensúly a számítási teljesítmény, a perifériák közötti kommunikáció  sebessége és memória használat között. Ezt támogatja 
@@ -226,22 +226,21 @@ a lapka memóriájába már betöltött adatok minél hatékonyabb újrafelhaszn
 
 \subsubsection{Hardver tulajdonságai}
 \paragraph[Soc]{Rendszerchip}
-A chip 4. generációs 16 sávos PCIe végponttal rendelkezik. A nagy memóriakapacitás lehetőségéet lapkán 4 darab HBM2\footnote{High Bandwidth Memory: DRAM modulok térben egymásra pakolását alkalmazó RAM interfész típus. HBM2 esetén a legnagyobb kapacitás 8GB lehet egy tokban. Leginkább videó kártyákban használatos } memória foglalattal oldották meg. 
-%64 lanes SerDes
-A számításokat 24 darab tenzor processzormag végzi(TPC), és a vállalat szerint összesen 119 tenzor számítást képesek végezni másodpercenként.A lapkán elhelyeztek 60 MB osztott memóriát is, továbbá egy menedzsment processzort.
+A chip 4. generációs 16 sávos PCIe végponttal rendelkezik. A nagy memóriakapacitás lehetőségét lapkán 4 darab HBM2\footnote{High Bandwidth Memory: DRAM modulok térben egymásra pakolását alkalmazó RAM interfész típus. HBM2 esetén a legnagyobb kapacitás 8GB lehet egy tokban. Leginkább videó kártyákban használatos } memória foglalattal oldották meg. A lapkák közötti kommunikációra SerDes interfész 64~sávval is implementálva lett.
+A számításokat 24~darab tenzor processzormag végzi(TPC), és a vállalat szerint számítási kapacitásuk összesen 119~TOP/s (billió utasítás másodpercenként).A lapkán elhelyeztek 60~MB osztott memóriát is.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{NNP-T_soc}
-	\caption[SoC]{Az NNP-T egylapkás rendszer (SoC) felépítése\\ forrás:}
+	\caption[SoC]{Az NNP-T egylapkás rendszer (SoC) felépítése}
 	\label{fig:nnp-tsoc}
 \end{figure}
 
 \paragraph{Tenzor processzor (TPC)}
-Egy TPC magon belül két darab mátrixszorzó egység van, melyek egyenként 32$\times$32-es méretű mátrixok tud szorzást végezni, a konvolúció műveletet pedig külön egység végzi. Minden mag továbbá rendelkezik 2,5 MB Cache memóriával, melyek sávszélessége 1.4TB/s.
+Egy TPC magon belül két darab mátrixszorzó tömb van, melyek egyenként 32$\times$32-es méretű mátrixok tud szorzást végezni, a konvolúció műveletet pedig külön egység végzi. Minden mag továbbá rendelkezik 2,5~MB Cache memóriával, melyek sávszélessége 1,4~TB/s. A \ref{fig:TPC} ábrán látható zöld színnel jelzett útválasztó a magok közötti kommunikációért felelős. 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{tensor-processing-cluster_TPC}
-	\caption[TPC]{Egy TPC felépítése\\ forrás:\cite{dia}}
+	\caption[TPC]{Egy TPC felépítése}
 	\label{fig:TPC}
 \end{figure}
 
@@ -249,15 +248,14 @@ Egy TPC magon belül két darab mátrixszorzó egység van, melyek egyenként 32
 %TSMC CLN16FF+
 %680mm 2 , 1200mm 2 interposer
 %27 Billion Transistors
-Az Intel az NNP-T egyedi PCIe és OAM kártyán fogja forgalmazni, melyre egy rendszerchipet szerelnek összesen 32 gigabájt HBM2-2400 típusú memóriával -- melynek elméleti sávszélessége 1,22TB/s -- BGA tokozásban.
-A rendszerchip órajele az 1,1GHz-et is elérheti. A kártya 4. generációs PCI Express x16, valamint SPI, I2C csatolófelülettel és általános célú I/O kivezetéssel rendelkezik. A központi egység léghűtésű átlagos használat esetén 150 és 250W közötti fogyasztással.
-%64 lanes SerDes HSIO up to 3.58Tbps aggregate BW
+Az Intel az NNP-T rendszerchipet egyedi PCIe és OAM alaktényezőjű kártyán fogja forgalmazni, melyre egy rendszerchipet szerelnek összesen 32~GB HBM2-2400 típusú memóriával -- melynek elméleti sávszélessége 1,22~TB/s -- BGA tokozásban.
+A rendszerchip órajele az 1,1GHz-et is elérheti. A kártya 4. generációs PCI Express x16, valamint SPI, I2C csatolófelülettel és általános célú I/O kivezetéssel rendelkezik. A központi egység léghűtésű átlagos használat esetén 150 és 250~W közötti fogyasztással. A kártyán kivezetésre került 64~SerDes sáv, melynek aggregált sávszélessége 3,58~Tb/s. Ezen interfész segít megvalósítani több lapka összehangolt működését, mellyel maximum 1024 csomópontot lehet összekötni úgy, hogy azok összes TPC magja egy nagy hálózatként kezelhető, ezzel elérve a masszív párhuzamosítást. 
 
-\subsubsection{Szoftver fejlesztés}
-teljes fejlesztői szoftverkészlet nyílt forrású komponensekkel
+\subsubsection{Az NNP-T programozásához használatos szoftver együttes}
+Az alkalmazásfejlesztés az ilyen rendszerchipekkel szerelt kártyákra egyedi eszközkészlettel lehetséges. A vállalat ajánl egy teljes fejlesztői szoftverkészletet nyílt forrású komponensekkel. A \ref{fig:nnp-tSwStack}~ábra az egyes komponenseket hardver és felhasználó közötti viszonya szerint rétegezve mutatja be. Ezek közül az nGraph-ot és a magas szintű keretrendszerek közül a TensorFlow-t, már bemutattam korábban, illetve pár szóban összefoglalom az Argon programkönyvtárat.
 %nGraph: Hardware agnostic deep learning library and compiler for DL platform developers. -> Provides common set of optimizations for NNP-T across DL frameworks
-Argon: NNP-T DNN compute and communication kernel library
-Low-level programmability: NNP-T kernel development toolchain w/tensor compiler
+%Argon: NNP-T DNN compute and communication kernel library
+%Low-level programmability: NNP-T kernel development toolchain w/tensor compiler
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{nnp-t_softwares}
@@ -266,16 +264,32 @@ Low-level programmability: NNP-T kernel development toolchain w/tensor compiler
 \end{figure}
 
 \subsubsection{NNP-T Programozási modell}
- Rugalmas és programozható tenzor alapú utasításkészlet architektúra
-	korlátozott méretű utasításkészlet
-	bővíthető uController utasításokkal
- Ugyanazt a programozási modellt kell alkalmazni lapkán belüli és lapkák közötti folyamatok programozására
- A mély tanulást alkalmazó munkafolyamatokat az utasítások egy kis csoportja végzi
-Bfloat16 típuskezelés (IEEE 754 félszeres pontosságtól annyiban tér el, hogy az exponens 5 helyett 8 bites): jól konvergál tanításkor és memória hely takarékosis egyben
+Az Utasításkészlet szintjén is neurális hálózatokra lett optimalizálva a rendszerchip azzal, hogy a hálózat tanításakor alkalmazandó tenzor műveletekhez natív utasítások tartoznak, úgy mint transzponálás, tenzor darabolása, stb. Az utasításkészlet is ezen utasításokra van korlátozva, azonban ez bővíthető egyedi mikrokontroller kutasításokkal. A bővíthetőség azt a célt szolgálja, hogy a jövőbeli mély tanulásra épülő munkafolyamatok támogatottsága is megoldható legyen utasítás szinten. 
+Az Intel hierarchikus elosztott programozási modellt használ, ami jól skálázható, így alkalmazható egy rendszerchip TPC magjaira, vagy akár több lapka együttes programozáskor. Ezt segíti, hogy a magok közti kommunikáció és szinkronizáció elemi utasításai konzisztensek lapkán belül és több lapka között.
+Azon túl, hogy a hardver az adatokat tenzoronként kezeli, a tenzorokon belüli elemi változókat Bfloat16\footnote{Az IEEE 754 félszeres, azaz 16~bites pontosságú lebegőpontos típustól annyiban tér el, hogy az exponens 5 helyett 8~bites. Ez az Intel állítása szerint azon túl, hogy memória hely takarékos, tanításkor jól konvergáló változókat biztosít} és 32~bites lebegőpontos típusként tudja értelmezni
 
 \subsection[NNP-I]{Neural Network Processor for Inference}
-% 4.8 TOPs wattonkánt
-% 
+Betanított neurális hálózatok futtatására alkalmazható rendszerchip, melyet az NNP-T-vel együtt kezdett el fejleszteni a vállalat. Ennél a lapkánál a cél a kis fogyasztás volt. A gyártó szerint Wattonkénti 4,8~billió számítást képes végezni másodpercenként. A számítási teljesítmény a fogyasztás hangolásával természetesen változó. (Jelenleg M.2 és PCIe alaktényezőjű kártyákon forgalmazzák. Előbbi 12~wattos teljesítményű, míg az utóbbi teljesítménye 75~W. Számítási kapacitásuk 50 és 170~TOP/s)
 
+Hasonlóan az NNP-T-hez ez a rendszerchip is egyedi processzormagokat tartalmaz, összesen 12-t. A mag megnevezése \emph{Inference Compute Engine}, röviden ICE. Az lapka (\ref{fig:nnp-isoc}~ábra) kiegészül még 24~MB cache memóriával, melyen az összes mag osztozik.
+%Egy ICE elég önálló ahhoz, hogy egy egyszerűbb hálózatot egészben lmodellezzen, de persze az ICE magok képesek összedolgozni
+Az ICE magok mellett két Intel IA Core processzormag is részét képezi a rendszerchipnek. Ezek párban az ICE-k munkáját hangolják össze a fordítótól érkező utasítások alapján, -- ide kapcsolódik, hogy \emph{Ahead Of Time} fordítás végezhető az eszközre -- tehát a programozó által közvetlenül ez a két processzormag elérhető. Egy ICE két számítást végző blokkból áll: egy \emph{Deep Learning compute grid}-nek nevezett több számítási egységből álló hálózatból, -- melyek a neurális hálózatok modellezése során igényelt műveletek javát végzik -- illetve egy programozható vektor processzorból AVX és VNNI utasításkészlettel. A vektor processzor jóvoltából tetszőleges utasításokkal bővíthető a mag.
 
-%TODO Nincs Befejezve
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{fig/NNP-I_soc}
+		\caption{Az SoC logikai felépítése}
+		\label{fig:nnp-isoc}
+	\end{subfigure}
+	\quad
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{fig/NNP-I_memManagement}
+		\caption{Memória menedzsment}
+		\label{fig:nnp-imem}
+	\end{subfigure}
+	\caption{}
+	\label{fig:nnp-i}
+\end{figure}
+
+Egy ICE 4~MB lokális SRAM memóriát kapott. Ezen ICE magok képesek 16 bites lebegőpontos valamint 8, 4, 2 és 1~bites egész változókat kezelni. Az NNP-I lapka 3. generációs PCIe (x4 vagy x8) végponttal kapcsolódik a befogadó kártyához, továbbá egy LP-DDR4 memória ültethető a hordozó lapkára az S . Azért, hogy az adatmozgatást minimalizálják a memória allokáció 4 szinten van rendezve hierarchikusan, ahogy az \ref{fig:nnp-imem}~ábrán látható. Ezt a rendszerchipet ugyanazzal a szoftver együttessel tudjuk programozni, mint az NNP-T SoC-t.
