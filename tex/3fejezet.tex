@@ -1,11 +1,14 @@
 %-------------------------------------------------------------------------------
-\chapter{Speciális platformok megjelenése}
+\chapter{Deep Learning platformok}
 %-------------------------------------------------------------------------------
-\section{hybrid deep learning}
+\section{hybrid deep learning} \label{sect:hybridDL}
+%hybrid computing
+A heterogén számítási rendszerek fejlesztését nem a mély tanulással kapcsolatos kutatások hozták létre. Azonban a neurális hálózatok mára már jelentősen megnövekedett számítási igényét --~ami az egyre összetettebb hálózatok teremtenek~-- hatékonyan lehet kielégíteni ilyen rendszerekkel. Ezért több olyan szoftver eszközt kezdek fejleszteni ami segít megvalósítani a hálózatok implementációját különböző processzor architektúrára.
 %TODO Nincs befejezve
 
 \section{nGraph}
-A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
+Az \ref{sect:hybridDL}~alfejezetben említett heterogén számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
+
 Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez.
 Legszembetűnőbb tulajdonsága, hogy képes többféle hardver architektúrán futtatni és beépíthető számos keretrendszerbe.
 Ezek azok a jellemzők, amiket kerestünk témavezetőmmel, hogy mély tanulást tudjunk végeztetni hatékonyan a \emph{HuSSar-on}. 
@@ -75,7 +78,14 @@ Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform f
 
 Összegzésül tehát az nGraph feldarabolja a neurális hálózathoz tartozó számítási gráfot processzor architektúrának megfelelően, majd ezen gráfokat a PlaidML lefordítja a megfelelő kódokra, melyeket aztán a célprocesszorokra lefordítunk és futtatunk.
 
-%TODO ide még jöhetne egy nGraph használatát bemutató alfejezet 
+\section{Mély tanulásra optimalizált grafikus gyorsítók}
+%nVidia gyorsítókártyák
+\subsection{Intel grafikus processzorok}
+%TODO Nincs befejezve
+
+\subsection{Nvidia által fejlesztett gyorsítókártyák }
+%TODO Nincs befejezve
+
 \section{Myriad X és az Intel Neural Computer Stick 2}
 %Motiváció: Valós idejű alkalmazások esetén szükséges az offline számítás -> GPU - lehetséges, de erőforrás igényes(áram és hűtés) és nagy méretű 
 Ma az iparban mély tanulással működő modern alkalmazások nagy méretű és teljesítményű számítógépeket igényelnek. Erre az igényre válaszul felhő szolgáltatást nyújtó vállalatok külön platformot építettek ki. Az ilyen kliens-szerver architektúrájú gépi tanulás hatékony lehet, azonban a valós-idejű alkalmazásoknál és hordozható eszközökben történő felhasználásnál komoly hátrányt jelenthet a hálózati késleltetés. Hogy ilyen területeken is alkalmazható legyen a mély tanulás, hardvergyártók olyan kis energiafogyasztású \emph{alkalmazás-specifikus integrált áramkörök} fejlesztésére törekedtek, melyek képesek neurális hálózatokat hatékonyan futtatni. Ilyen az Intel által kifejlesztett Myriad X lapka is, melyet főleg \emph{gépi látáshoz} terveztek.
@@ -176,7 +186,7 @@ Az Inference Engine használatával Python nyelven ismerkedtem meg, így alább 
 	\item[\PVerb{OutputInfo}] a modell bemeneti rétegének tulajdonságait tartalmazza hsonlóan az \verb|InputInfo| osztályhoz;
 \end{description}
 
-Egy elemi alkalmazás implementációjához, mely inferenciát végez az NCS2 eszközön szükség van az \verb|IENetwork| és \verb|IECore| vagy \verb|IEPlugin| osztályokra továbbá létrejön egy \verb|ExecutableNetwork| egyed, amivel az inferenciát elvégeztetjük. A modell feltöltése az eszközre, majd az inferencia futtatása a \ref{lst:IEPython} kód szerint tehető meg.
+Egy elemi alkalmazás implementációjához, mely inferenciát végez az NCS2 eszközön szükség van az \verb|IENetwork| és \verb|IECore| vagy \verb|IEPlugin| osztályokra továbbá létrejön egy \verb|ExecutableNetwork| egyed, amivel az inferenciát elvégeztetjük. A modell feltöltése az eszközre, majd az inferencia futtatása a \ref{lst:IEPython}~kód szerint tehető meg.
 \begin{minipage}{\textwidth}
 	\begin{lstlisting}[language=Python,caption=Inference Engine használata PYthon-ból ]
 from openvino.inference_engine import IENetwork, IEPlugin
