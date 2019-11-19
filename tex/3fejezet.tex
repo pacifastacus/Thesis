@@ -3,11 +3,15 @@
 %-------------------------------------------------------------------------------
 \section{hybrid deep learning} \label{sect:hybridDL}
 %hybrid computing
-A heterogén számítási rendszerek fejlesztését nem a mély tanulással kapcsolatos kutatások hozták létre. Azonban a neurális hálózatok mára már jelentősen megnövekedett számítási igényét --~ami az egyre összetettebb hálózatok teremtenek~-- hatékonyan lehet kielégíteni ilyen rendszerekkel. Ezért több olyan szoftver eszközt kezdek fejleszteni ami segít megvalósítani a hálózatok implementációját különböző processzor architektúrára.
-%TODO Nincs befejezve
+A mai nagy teljesítményű párhuzamos számítási rendszerek igyekeznek kiaknázni az eltérő architektúrájú processzorok együttes alkalmazásában rejlő lehetőséget. Az ilyen heterogén rendszerek nemcsak nagyobb számítási kapacitással rendelkeznek, --~összehasonlítva az homogén rendszerek egy processzormagra eső számítási teljesítményét~-- de jelentősen kisebb az energiafelhasználásuk. Rengeteg területen alkalmaznak ilyen rendszereket, többek között elektrontomográfiás képrekonstrukciónál\cite{agulleiro2012} párhuzamos számítást igénylő tudományos alkalmazásokhoz\cite{meredith2011} és az ún. \emph{smart manufacturing} gyártástechnológia esetén.\cite{li2019}
+
+A párhuzamos adatfeldolgozás miatt ezek a rendszerek elsősorban grafikus processzor architektúrákat --~kiváltképpen \emph{általános célú grafikus processzorokat} (GPGPU)~-- alkalmaznak hagyományos CPU-k mellett.\footnote{Hibrid számítási rendszereknél előfordul még az FPGA-k és a DSP-k használata is, azonban szakdolgozatomban erre nem fogok kitérni.}Sok olyan rendszer épülhetett, ahol pár általános célú processzor mellett több GPGPU működött, azonban a legtöbb ilyen rendszer esetében a CPU-k pusztán az a az operációs rendszer futtatásában és számítási feladatok szétosztásában vett részt. Mély tanulás esetén előfordulhatnak olyan feladatok, amiket több CPU magra lehetne bízni.
+%TODO nincs kész
+
+
 
 \section{nGraph}
-Az \ref{sect:hybridDL}~alfejezetben említett heterogén számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
+Az \ref{sect:hybridDL}~alfejezetben említett hibrid számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
 
 Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez.
 Legszembetűnőbb tulajdonsága, hogy képes többféle hardver architektúrán futtatni és beépíthető számos keretrendszerbe.
@@ -43,13 +47,15 @@ Fordítási időben megállapítható, hogy $B$ egy skalár konstans, így a \em
 Ebben a példában $B=0$ skalár volt, így a belőle létrejött tenzor egy nullmátrix, így az semleges a kifejezés kiértékelésének szempontjából.
 \emph{Algebrai egyszerűsítést} végezve az $ (A+0)*C $ leegyszerűsíthető az $A*C$ kifejezésre, így összesen két csúccsal csökkentettük a gráfunkat.
 Ez az optimalizáció tehát a számítási gráf szintjén lett elvégezve.
-Így belátható, hogy a mély tanulási keretrendszerbe integrált kernel programkönyvtárak nem optimális futást végeznek, hiába a műveletek szintjén elért optimalizálás. 
+Így belátható, hogy a mély tanulási keretrendszerbe integrált kernel programkönyvtárak nem optimális futást végeznek, hiába a műveletek szintjén elért optimalizálás.
+
 \subsection{Skálázható keretrendszer integráció}
 Ahogy gyarapodik a mély tanuláshoz használható gyorsítókártya architektúrák és keretrendszerek száma, a meglévő mély tanulást alkalmazó fejlesztési platformok bővítése egyre több munkát igényel és egyre nő a hibák megjelenésének a valószínűsége. Az integráció kapható készen, szakértő fejlesztőcsapatoknak kell implementálnia.
 Minden új keretrendszert manuálisan kell integrálni a meglévő hardverek kernel könyvtárával és minden újonnan megjelenő hardvercsalád meghajtó programkönyvtárát be kell integrálni egyesével a meglévő keretrendszerekbe.
 Ez a munka önmagában is hatalmasra tud nőni, de egy sok eszközből álló összeállítás nagyon törékeny és költséges a fenntartása.
 Az nGraph úgy oldja meg ezt a problémát, hogy ún. \emph{hidakat} alkalmaz, amikkel integrálható valamelyik mély tanulási keretrendszerbe.
 A híd megkapja a keretrendszerben megalkotott számítási gráfot vagy ahhoz hasonló struktúrát és átalakítja egy ún. \emph{közbenső reprezentációvá}\footnote{IR: Intermediate Representation}. Ezzel kaptunk egy egységes, platformfüggetlen számítási gráfot, így nem kell egy új programkönyvtárat beintegrálni minden egyes meglévő keretrendszer alá, elegendő csak az, hogy az nGraph-ban, mint programkönyvtárban implementált \emph{primitív műveleteket} támogassa az új programkönyvtár.
+
 \subsection{Növekvő kernel szám}
 Egy kernel könyvtár integrálása egyszerre több mély tanulási keretrendszerrel nehéz feladat és egyre komplexebbé válik, ahogy növekszik az optimális teljesítményhez szükséges kernelek száma.
 Régen a mély tanulással kapcsolatos kutatások egy kis számú \emph{primitív} számítást használtak, mint a konvolúció, általános mátrixszorzás, stb. Az MI kutatás előrehaladtával és az ipari mély tanuló alkalmazások továbbfejlesztésével, a szükséges kernelek száma (k) exponenciálisan nő.
@@ -83,15 +89,52 @@ Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform f
 \subsection{Intel grafikus processzorok}
 %TODO Nincs befejezve
 
-\subsection{Nvidia által fejlesztett gyorsítókártyák }
-%TODO Nincs befejezve
+\subsection{Nvidia által fejlesztett gyorsítókártyák}
+Abban az időben mikor a mély tanulás bekerült a köztudatba a grafikus processzor gyártóknak olyan megoldásaik voltak, amikkel általános számítási feladatok programozását tette lehetővé a termékeiken. Ilyen az Nvidia CUDA (\emph{Compute Unified Device Architecture}) is, ami egy párhuzamos számítási platform és alkalmazásprogramozási interfész modell. Maga a platform egy olyan szoftverréteg, mely közvetlen hozzáférést enged a GPU utasításkészletéhez.\cite{wiki:cuda} Az API pedig olyan programozási eszközöket nyújt, amivel hatékonyan lehet CUDA képes GPU-n futó programot írni. A cég által közzé tett dokumentációk alapján nagy vonalakban bemutatnám a neurális hálózatok fejlesztéshez használható eszközeit\cite{web:cudnn}
+
+Ahhoz, hogy neurális hálózatokat futtassunk CUDA platform szükséges a CuDNN (\emph{CUDA Deep Neural Network Library}) könyvtárcsomag, mely a nélkülözhetetlen elemi függvényeket implementálja:
+\begin{enumerate}
+	\item Konvolúció
+	\item Adatok összevonása (pooling)
+	\item neuron aktivációs függvények
+	\item tenzor transzformáció
+%	\item LRN, LCN and batch normalization
+\end{enumerate}
+A CuDNN használatakor szükséges egy kezelőt (handler) inicializálni a \verb|cudnnCreate()| metódus hívásával. A metódus hívásával inicializálódik a programkönyvtár is, elvégzi a gazdarendszer és a gyorsítókártya erőforrásainak allokációját. Továbbá a visszaadott eszközkezelő mutat az inicializált gyorsítóra, így használható a későbbi függvényhívásoknál, melyeket az adott eszközön akarunk végrehajtatni.
+
+A vállalat GPU-jainak magjai közül CUDA magoknak hívja azokat a speciális számítási egységeket, melyek egyedileg programozhatóak a platformon (tehát CUDA alatt nem utilizálható az összes mag). A mai legmodernebb gyorsítókártyákat az NVIDIA Turingnak nevezett architektúrájú processzorokkal szereli fel. Itt szeretnék bemutatni két felhasználási területük szempontjából eltérő kártyát:\cite{spec:titan-rtx}\cite{spec:tesla-t4}
+\paragraph{TITAN RTX}
+%Turing microarchitecture (TU102)
+%24~GB GDDR6 @ 1750~MHz
+% bitráta 14~Gb/s
+% sávszélesség 672~GB/s (384bites busz)
+%órajel alap 1350~MHz, csúcs 1770~MHz
+% 576~tenzor mag
+% 4608~CUDA mag
+% 32.62 TFLOPS (FP16) 2:1 arány
+% 16.31 TFLOPS (FP32)
+% 600~W felvett teljesítmény
+% TDP: 280~W
+Igen nagy teljesítményű grafikus kártya, mely a cég \emph{turing} mikroarchitektúrájú TU102 processzorral van felszerelve, ami 4608~CUDA processzormagot, valamint 576 tenzor magot tartalmaz és alapjáraton 1350~MHz órajelen üzemel. A kártyát felszerelték 24~GB GDDR6 memóriával, melynek sávszélessége 672~GB/s\footnote{a memóriaegységek 384~bit széles adatbuszon továbbítanak adatot 14~Gb/s-os bitrátával}. Elméleti számítási kapacitása 16.31~TFLOP/s (billió lebegőpontos művelet másodpercenként) egyszeres pontosságú lebegőpontos műveletek esetén. Ez az érték félszeres pontosság esetén --~amit a mai neurális hálózatoknál gyakran használnak~-- dupla ennyi. Ez egy nagy energiafogyasztású kártya, a gyártó 600~W teljesítmény leadására képes tápegységet ajánl az eszköz mellé.
+
+\paragraph{Tesla T4}
+%turing microarchitecture (TU104)
+%16~GB GDDR6 @ 1250~MHz
+% sávszélesség 320~GB/S (256bites busz)
+% órajel alap 585~MHz, csúcs 1590~MHz
+% 320~tenzor mag
+% 2560~CUDA mag
+% 65.13~TFLOPS (FP16) 8:1 arány
+% 8.141~TFLOPS (FP32)
+% 350~W felvett teljesítmény
+% TDP: 70~W
+Ezt a grafikus kártyát kifejezetten adatközpontok komponenseként szánták, ezért nem is szolgáltat videó jelet. Számítási teljesítményes is bizonyos szempontból szerényebb a TITAN RTX-nél. Szintén turing architektúrájú TU104 processzora 2560~CUDA magot tartalmaz. A szerényebb felszereltségnek ugyancsak az adatközponti felhasználása miatt van jelentőssége, hogy így kisebb áramfelvétel és hőleadás mellett tudjon üzemelni -- 350~W ajánlott leadási teljesítmény és összehasonlításképp a TITAN RTX \emph{Thermal Design Pointja} 280~W, míg ennek a kártyának csupán 70~W. Egyszeres pontosságú lebegópontos műveleteket alkalmazó számítások elméleti sebessége 8,141~TFLOP/s, viszont a félszeres pontosságnál nyolcszor gyorsabb, azaz ekkor 65,13~TFLOP/s az elméleti sebessége. Ebből látszik, hogy ez a kártya kifejezetten mély tanuláshoz és olyan alkalmazásokhoz lett optimalizálva, ahol félszeres pontosságú lebegőpontos számításokat kell végezni túlnyomó részt. A teljesség kedvéért megemlítem, hogy a kártya 16~GB szintén GDDR6 típusú memóriával lett felszerelve, melynek sávszélessége 320~GB/s (256~bites buszszélesség).
 
 \section{Myriad X és az Intel Neural Computer Stick 2}
 %Motiváció: Valós idejű alkalmazások esetén szükséges az offline számítás -> GPU - lehetséges, de erőforrás igényes(áram és hűtés) és nagy méretű 
 Ma az iparban mély tanulással működő modern alkalmazások nagy méretű és teljesítményű számítógépeket igényelnek. Erre az igényre válaszul felhő szolgáltatást nyújtó vállalatok külön platformot építettek ki. Az ilyen kliens-szerver architektúrájú gépi tanulás hatékony lehet, azonban a valós-idejű alkalmazásoknál és hordozható eszközökben történő felhasználásnál komoly hátrányt jelenthet a hálózati késleltetés. Hogy ilyen területeken is alkalmazható legyen a mély tanulás, hardvergyártók olyan kis energiafogyasztású \emph{alkalmazás-specifikus integrált áramkörök} fejlesztésére törekedtek, melyek képesek neurális hálózatokat hatékonyan futtatni. Ilyen az Intel által kifejlesztett Myriad X lapka is, melyet főleg \emph{gépi látáshoz} terveztek.
 
 Maga a Myriad egy Videójel feldolgozó processzor széria, melynek 3. generációja a Myriad X architektúrája kiegészült egy úgynevezett \emph{Neural Compute Engine-el}, mely a betanított hálózatok futtatását hivatott gyorsítani. Ezzel együtt a lapka 16 darab 128-bit VLIW processzormagok, ún. SHAVE magot és 2,5MB 400GB/s sávszélességű memóriát tartalmaz. Számításokat 8bites egészek és 16bites lebegőpontos váltózókon tud végezni.\footnote{forrás: https://www.movidius.com/myriadx} 
-% TODO Myriad X
 
 A Myriad X kifejlesztésén túlmenően a vállalat tervezett egy gyorsítókártyát is ehhez a processzorhoz, melyet Neural Compute Stick (NCS) névvel forgalmaz. Az Intel kiadta a második verzióját az eszköznek  Neural Compute Stick 2 (NCS2) névvel és az első verziót nem forgalmazz már. Ezért a továbbiakban a leírtakat az NCS2-re kell érteni.
 Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel használható, többek között Raspberry Pi-vel is. Meghajtására az Intel OpenVINO eszközkészlete használható, melyet gépi látáson alapuló alkalmazások fejlesztésére készített a vállalat. Lehetőség van egy platformon több NCS2 modul együttes használatára, így egyszerűen növelhető a rendszer teljesítménye.
@@ -125,7 +168,7 @@ Mint már korábban említettem a platform különböző neurális hálózatok i
 
 Egy TensorFlow-ban implementált neurális hálózat átkonvertáláshoz az alábbi lépéseket kell végrehajtani:
 \paragraph*{Model Optimizer konfigurációja}
-	Az alkalmazás előre elkészített szkriptekkel települ a különböző keretrendszerekhez történő konfigurációhoz. A szkriptek a \url{<főkönyvtár>/deployment_tools/model_optimizer/install_prerequisites} könyvtárban találhatóak. TensorFlow-val való munkához az \verb|install_prerequisites_tf.sh| -- Windows operációs rendszeren ugyanezen fájlnéven \verb|.bat| kiterjesztéssel -- konfigurációs szkriptet kell lefuttatni.
+	Az alkalmazás előre elkészített szkriptekkel települ a különböző keretrendszerekhez történő konfigurációhoz. A szkriptek a \url{<main directory>/deployment_tools/model_optimizer/install_prerequisites} könyvtárban találhatóak. TensorFlow-val való munkához az \verb|install_prerequisites_tf.sh| -- Windows operációs rendszeren ugyanezen fájlnéven \verb|.bat| kiterjesztéssel -- konfigurációs szkriptet kell lefuttatni.
 
 \paragraph*{TensorFlow modell befagyasztása}
 	Ez egy keretrendszer specifikus lépés. Amikor Python-ban definiáljuk a hálózatot, rendszerint elmentjük azt egy \emph{inference graph} fájlban. Ez általában olyan módon történik, hogy a hálózat tanítható marad, tehát annak paraméterei, mint változók tárolva vannak az állományban. A Model Optimizer csak úgy tud dolgozni ezen az állományon, ha az úgymond be van \emph{fagyasztva}. A keretrendszerben befagyasztott modell kimentésének műveletét a következő kódrészlet mutatja:
