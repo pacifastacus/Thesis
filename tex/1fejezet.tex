@@ -1,16 +1,15 @@
 %-------------------------------------------------------------------------------
 \chapter{Neurális hálózatok és a Deep Learning}\label{chap:neuralis-halozatok-es-a-deep-learning}
 %-------------------------------------------------------------------------------
-Ebben a fejezetben szeretném összegezni megszerzett tudásomat a neurális hálózatokról és a Deep Learning-ről, magyarul mély tanulásról. 
+%Ebben a fejezetben szeretném összegezni megszerzett tudásomat a neurális hálózatokról és a Deep Learning-ről, magyarul mély tanulásról. 
 
 \section{A neurális hálózatok elmélete}
 \label{sect:neuralNetworkTheory}
 % TODO ezt a bekezdést még dolgozd át!
 Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}
+Kiderült, hogy ezek a struktúrák kiválóan alkalmasak osztályozási és regresszió számítási problémák megoldására, és a mai gépi tanulással kapcsolatos fejlesztések középpontjába került.
 
-A mesterséges neurális hálózatok egy viszonylag egyszerű modellen alapulnak. Minden neuron a hozzá kapcsolódó neuronok ingereinek összessége alapján ingerli a többi neuront melyekhez ő kapcsolódik, ekképpen az ingerület egy irányba halad a kapcsolatok mentén.
-
-Hogy a hálózat áttekinthető legyen, rendezzük a neuronokat rétegekbe úgy, hogy egy réteg neuronjai az ingerületet a közvetlen felső réteg neuronjaitól kapja, és a válasz ingert a közvetlenül alatta lévő réteg neuronjainak továbbítja.
+A mesterséges neurális hálózatok egy viszonylag egyszerű modellen alapulnak. Minden neuron a hozzá kapcsolódó neuronok ingereinek összessége alapján ingerli a többi neuront melyekhez ő kapcsolódik, ekképpen az ingerület egy irányba halad a kapcsolatok mentén. Hogy a hálózat áttekinthető legyen, rendezzük a neuronokat rétegekbe úgy, hogy egy réteg neuronjai az ingerületet a közvetlen felső réteg neuronjaitól kapja, és a válasz ingert a közvetlenül alatta lévő réteg neuronjainak továbbítja.
 
 \begin{figure}[h]
 	\centering
@@ -32,11 +31,11 @@ Egy neuronban két művelet történik: a bementek összegzése és egy aktivál
 \begin{displaymath}
 	s = \sum_i{w_ix_i} = \vec{w}\cdot\vec{x}
 \end{displaymath}
-ahol $x_i$ a felső réteg i.-ik neuronjának kimenete, $w_i$ az i.-ik neuron szinapszisához tartozó súly, mellyel a szinapszis "erősségét" határozzuk meg. Az "s" összeghez hozzáadunk még egy $b$ értéket, a neuron aktiválási küszöbértéke lesz.
+ahol $x_i$ a felső réteg i.-ik neuronjának kimenete, $w_i$ az i.-ik neuron szinapszisához tartozó súly, mellyel a szinapszis "erősségét" határozzuk meg. Az "s" összeghez hozzáadunk még egy $b$  büntetőtagot, ami neuron aktiválási küszöbe lesz.
 Az aktivációs függvény adja a neurális hálózat kimenetét, paramétere $s+b$.
 A neurális hálózatok fejlesztésekor sokféle függvényt találtak alkalmasnak aktivációs függvény gyanánt. Közös jellemzőjük, hogy inflexiós pontjuk $x=0$ helyen van, illetve 0-ban nem deriválható függvények esetén a töréspont esik ide.
 
-A szemléletesség kedvéért tekintsünk meg az egyrétegű perceptront, vagyis egy egyetlen rétegből álló neurális hálózatot $k$ darab neuronnal. A bemenet legyen az $\vec{x}=(x_1,\dots,x_n)$ vektor (a gyakorlatban bemeneti rétegként szokták hívni). A szinapszisok súlyait a $W=\{w_{ij}:i=1\dots n,j=1\dots k\}$  mátrix ($\vec{w}_i$ az i. bemeneti adatból kiinduló szinapszisokhoz tartozó súlyok vektora lesz), a neuronok küszöbértékeit a $\vec{b}=(b_1,\dots,b_k)$ tartalmazza. Az aktivációs függvény $f$. A hálózat kimenetét, vagyis a  $\vec{y}=(y_1,\dots,y_k)$ elemeit megkapjuk a következőképpen:
+A szemléletesség kedvéért tekintsünk meg az egyrétegű perceptront, vagyis egy egyetlen rétegből álló neurális hálózatot $k$ darab neuronnal. A bemenet legyen az $\vec{x}=(x_1,\dots,x_n)$ vektor (a gyakorlatban bemeneti rétegként szokták hívni). A szinapszisok súlyait a $W=\{w_{ij}:i=1\dots n,j=1\dots k\}$  mátrix ($\vec{w}_i$ az i. bemeneti adatból kiinduló szinapszisokhoz tartozó súlyok vektora lesz), a neuronok  büntetőtagját a $\vec{b}=(b_1,\dots,b_k)$ tartalmazza. Az aktivációs függvény $f$. A hálózat kimenetét, vagyis a  $\vec{y}=(y_1,\dots,y_k)$ elemeit megkapjuk a következőképpen:
 \begin{displaymath}
 	y_i = f(\vec{w}_i\cdot\vec{x}+b_i)
 \end{displaymath}
@@ -125,15 +124,15 @@ Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpaf�
 \end{figure}
 
 \subsection{Veszteség függvények}
-A neurális hálózat tanításához szükséges meghatároznunk egy $c(\vec{y},\vec{y'})$ veszteségfüggvényt, mely megadja a hálózat kimenetének eltérését az elvárt eredményhez képest adott súlyok mellett. Ezt az eltérést egy skalárértékként képezi le.
-%Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, $W,B$, a súlyokat és küszöbértékeket egybefogó vektorok halmaza. Ezen többváltozós függvény képe a \emph{veszteségfelület}.
+A neurális hálózat tanításához szükséges meghatároznunk egy $c(\vec{y},\vec{y'})$ veszteségfüggvényt, mely megadja a hálózat kimenetének eltérését az elvárt eredményhez képest adott súlyok mellett. Ezt az eltérést egy skalárértékként képezi le. Tanítás során ezt a függvényt kell minimalizálni.
+%Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, $W,B$, a súlyokat és  büntetőtagokat egybefogó vektorok halmaza. Ezen többváltozós függvény képe a \emph{veszteségfelület}.
 %TODO c(w,b) vagy c(y,y') helyes megközelítés?
 
 \paragraph[MSE]{Átlagos négyzetes hiba}
 Többosztályos problémánál a neurális hálózat egy valószínűségi változó eloszlása az összes osztályon. $\vec{y}$ vektor a hálózat válasza a $\vec{x}$ bemenetre, $\vec{y'}$ pedig a kívánt kimenet vektora --egy egységvektor, melynek 1 értékű koordinátája reprezentálja a megfelelő osztályt. Erre az esetre olyan veszteségfüggvényt alkalmazhatunk mely ekvivalens a $(\vec{x},\vec{y})\in Z$ tanítási készletből számított $MSE$ átlagos négyzetes hibáinak átlagával.
 \begin{align*}
 	MSE(\vec{y},\vec{y'}) = \frac{1}{n}\sum_{i=1}^{n} (y_i - y'_i)^2\\
-	C(w,b) = \frac{1}{m}\sum_{j=1}^{m} MSE(\vec{y}_j,\vec{y'}_j)\\
+	C(w,b) \equiv \frac{1}{m}\sum_{j=1}^{m} MSE(\vec{y}_j,\vec{y'}_j)\\
 \end{align*}
 A fenti egyenletekben n az kimeneti vektor dimenziója, m a tanító minták száma.
 	%
@@ -187,9 +186,9 @@ $$ v(w,y) = \gamma v(w,y-1) +(1-\gamma)(\nabla C(W_i))^2 $$
 Ahol $\gamma$ az ún. felejtési tényező amivel szabályozhatjuk, hogy mekkora befolyása legyen az újabb gradienseknek.\\
 A hálózat paramétereit a következőképpen frissítjük:
 $$ W_{i+1} = W_i - \frac{\eta}{\sqrt{v(w_,y)}} \nabla C(W_i) $$
-
-Tanítás során a veszteségfüggvény sztochasztikusan konvergál a nullához és ezzel együtt a hálózat egyre pontosabban következtet a tanító készlet adataiból. A tapasztalat azonban az, hogy ez nem feltétlenül igaz más, a tanítás során nem használt adatokra, sőt elérkezhet a hálózat egy olyan állapotba, amikor a használat közben rosszabbul teljesít, mint a tanítás végén. Ilyenkor a hálózat specializálódik a tanító adathalmazra végső esetben akár az egyes adatpontokra a hipotézis téren. Ezt a jelenséget, amikor a hálózat jobban következtet a tanítás során használt adathalmazon \emph{túlilleszkedésnek} nevezzük és \emph{alul-illeszkedésnek} azt, mikor a hálózat nem generalizál elég jól, más szóval túl kevés tanítási cikluson esett még át. Hogy a hálózat a hipotézis térből a megfelelő függvények -- nem törekszünk az adatok egy tökéletes leképezésére -- valamelyikét modellezze, szükséges a tanítást felügyelni, hogy az ne illeszkedjen se túl, se alul.
-%TODO Nincs Befejezve
+\\
+Tanítás során a veszteségfüggvény sztochasztikusan konvergál a nullához és ezzel együtt a hálózat egyre pontosabban következtet a tanító készlet adataiból. A tapasztalat azonban az, hogy ez nem feltétlenül igaz más, a tanítás során nem használt adatokra, sőt elérkezhet a hálózat egy olyan állapotba, amikor a használat közben rosszabbul teljesít, mint a tanítás végén. Ilyenkor a hálózat specializálódik a tanító adathalmazra. Ezt a jelenséget, amikor a hálózat jobban következtet a tanítás során használt adathalmazon \emph{túlilleszkedésnek} nevezzük és \emph{alul-illeszkedésnek} azt, mikor a hálózat nem elég pontos, más szóval túl kevés tanítási cikluson esett még át. Hogy a hálózat a hipotézis térből a megfelelő függvények -- nem törekszünk az adatok egy tökéletes leképezésére -- valamelyikét modellezze, szükséges a tanítást felügyelni, hogy az ne illeszkedjen se túl, se alul.
+A gyakorlatban ezért felügyeljük a tanítási folyamatot, és az optimalizálás minden ciklusában a hálózatnak egy külön validálásra szánt tanítókészletet adunk, és ezekre nem optimalizáljuk a hálózatot. Ezután össze tudjuk hasonlítani, hogy változik a hálózat hibája a tanító és validáló adatok mellett. Ennek tükrében abban a ciklusban ér el a hálózat a jól illesztett állapotot, amelyben a validációs veszteség érték eléri a minimumot.
 
 \subsubsection{Regressziós optimalizálás}
 %TODO Nincs befejezve

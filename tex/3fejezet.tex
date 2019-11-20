@@ -6,9 +6,8 @@
 A mai nagy teljesítményű párhuzamos számítási rendszerek igyekeznek kiaknázni az eltérő architektúrájú processzorok együttes alkalmazásában rejlő lehetőséget. Az ilyen heterogén rendszerek nemcsak nagyobb számítási kapacitással rendelkeznek, --~összehasonlítva az homogén rendszerek egy processzormagra eső számítási teljesítményét~-- de jelentősen kisebb az energiafelhasználásuk. Rengeteg területen alkalmaznak ilyen rendszereket, többek között elektrontomográfiás képrekonstrukciónál\cite{agulleiro2012} párhuzamos számítást igénylő tudományos alkalmazásokhoz\cite{meredith2011} és az ún. \emph{smart manufacturing} gyártástechnológia esetén.\cite{li2019}
 
 A párhuzamos adatfeldolgozás miatt ezek a rendszerek elsősorban grafikus processzor architektúrákat --~kiváltképpen \emph{általános célú grafikus processzorokat} (GPGPU)~-- alkalmaznak hagyományos CPU-k mellett.\footnote{Hibrid számítási rendszereknél előfordul még az FPGA-k és a DSP-k használata is, azonban szakdolgozatomban erre nem fogok kitérni.}Sok olyan rendszer épülhetett, ahol pár általános célú processzor mellett több GPGPU működött, azonban a legtöbb ilyen rendszer esetében a CPU-k pusztán az a az operációs rendszer futtatásában és számítási feladatok szétosztásában vett részt. Mély tanulás esetén előfordulhatnak olyan feladatok, amiket több CPU magra lehetne bízni.
-%TODO nincs kész
 
-
+A következő alfejezetekben szeretnék bemutatni olyan szoftvereket és hardvereket, melyek lehetséges építőkövei egy ilyen mély tanulásra használható hibrid számítási rendszernek.
 
 \section{nGraph}
 Az \ref{sect:hybridDL}~alfejezetben említett hibrid számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
@@ -85,8 +84,10 @@ Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform f
 Összegzésül tehát az nGraph feldarabolja a neurális hálózathoz tartozó számítási gráfot processzor architektúrának megfelelően, majd ezen gráfokat a PlaidML lefordítja a megfelelő kódokra, melyeket aztán a célprocesszorokra lefordítunk és futtatunk.
 
 \section{Mély tanulásra optimalizált grafikus gyorsítók}
-%nVidia gyorsítókártyák
+Változatos megoldások születnek a mély tanulás gyorsítására a hardvergyártók részéről. Kezdetben a nagy teljesítményű általános célú grafikus processzorokat (GPGPU) alkalmazták szinte kizárólag a neurális hálózatokkal kapcsolatos számításokhoz, mert ezek az architektúrák kifejezetten hatékonyan tudnak vektor és mátrixműveleteket végezni --~tulajdonképpen pont erre tervezték őket. Azonban ahogy elkezdett terjedni a mély tanulás olyan területeken is, ahol számít az alacsony hűtésigény, kiegyensúlyozott energiafogyasztás vagy a hordozhatóság, új architektúrák is kezdtek megjelenni. A következőkben bemutatok pár --~a mély tanulásban használt~-- hardvert és két szoftveres környezetet, melyek jól körvonalazzák, milyen irányba fog fejlődni a gépi tanulás technológiája.
+
 \subsection{Intel grafikus processzorok}
+Az Intel nagyon CPU-ját integrált grafikus processzorral szereli, szinte csak a munkaállomásokra szánt Xeon család processzorai nem tartalmaznak GPU-t (kivétel a Xeon E3 széria).\cite{wiki:listOfIGPU} Az Intel --~akárcsak a többi nagy hardvergyártó~-- ki akarja venni a részét a deep learning technológiák  fejlesztésében és olyan szoftvereket fejlesztett ki --~új architektúrák mellett~--, melyekkel mély tanulásra hasznosítható a szinte mindenütt jelenlévő GPU-ik számítási kapacitása. Ezek közül a legfontosabb az OpenCL alapú \emph{clDNN} programkönyvtár, mely lehetőség ad, hogy az cég processzoraiba integrált grafikus processzorokat mély tanulásra használhassuk. A másik a korábban bemutatott nGraph, mely több másik architektúra mellett Intel GPU-kat is képes kezelni.
 %TODO Nincs befejezve
 
 \subsection{Nvidia által fejlesztett gyorsítókártyák}
@@ -102,7 +103,9 @@ Ahhoz, hogy neurális hálózatokat futtassunk CUDA platform szükséges a CuDNN
 \end{enumerate}
 A CuDNN használatakor szükséges egy kezelőt (handler) inicializálni a \verb|cudnnCreate()| metódus hívásával. A metódus hívásával inicializálódik a programkönyvtár is, elvégzi a gazdarendszer és a gyorsítókártya erőforrásainak allokációját. Továbbá a visszaadott eszközkezelő mutat az inicializált gyorsítóra, így használható a későbbi függvényhívásoknál, melyeket az adott eszközön akarunk végrehajtatni.
 
-A vállalat GPU-jainak magjai közül CUDA magoknak hívja azokat a speciális számítási egységeket, melyek egyedileg programozhatóak a platformon (tehát CUDA alatt nem utilizálható az összes mag). A mai legmodernebb gyorsítókártyákat az NVIDIA Turingnak nevezett architektúrájú processzorokkal szereli fel. Itt szeretnék bemutatni két felhasználási területük szempontjából eltérő kártyát:\cite{spec:titan-rtx}\cite{spec:tesla-t4}
+A vállalat GPU-jainak magjai közül CUDA magoknak hívja azokat a speciális számítási egységeket, melyek egyedileg programozhatóak a platformon (tehát CUDA alatt nem utilizálható az összes mag). A mai legmodernebb gyorsítókártyákat az NVIDIA Turingnak nevezett architektúrájú processzorokkal szereli fel.
+%Itt szeretnék bemutatni két felhasználási területük szempontjából eltérő kártyát:
+Több fejlesztési irányt követnek a gyártók: Standard asztali és mobil grafikus processzorok, High-end asztali GPU (Nvidiánál: Quadro és TitanRTX\cite{spec:titan-rtx}), illetve szerver oldali GPU (Tesla\cite{spec:tesla-t4})
 \paragraph{TITAN RTX}
 %Turing microarchitecture (TU102)
 %24~GB GDDR6 @ 1750~MHz
@@ -147,11 +150,13 @@ Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel haszná
 \end{figure}
 
 \subsection{Az NCS2 használata OpenVINO keretrendszerben}
-Az alábbiak alapját az Intel OpenVINO eszközkészletének dokumentációja adja.\cite{web:OpenVINO} A dokumentációban a felépített neurális hálózatokra modell néven hivatkoznak, amit most én is átveszek.
+%Az alábbiak alapját az Intel OpenVINO eszközkészletének dokumentációja adja.\cite{web:OpenVINO} A dokumentációban a felépített neurális hálózatokra  modell néven hivatkoznak, amit most én is átveszek.
+Az OpenVINO eszközkészletéről részletes és nyílt hozzáférésű dokumentációt ad az Intel. \cite{web:OpenVINO} A felépített neurális hálózatokra a modell szó használata általános, így a dokumentáció is így nevezi azokat.
 
-Az OpenVINO eszközkészlet alkalmas arra, hogy gyorsan készítsünk olyan alkalmazásokat, melyek valamilyen módon emulálják az emberi látást. Képesek vagyunk segítségével az NCS2-n kívül más Intel gyártmányú hardverrel dolgozni, például Intel CPU-n és integrált GPU-n. Továbbá népszerű keretrendszereket támogat, mint a TensorFlow, Caffe, MXNet vagy az ONNX. Az eszközkészlet komponensekei közül az alábbiakat emelném ki:
+Az OpenVINO eszközkészlet alkalmas arra, hogy gyorsan készítsünk olyan alkalmazásokat, melyek %valamilyen módon emulálják az emberi látást
+kamera szenzor adatainak valós idejű feldolgozását végzik. Képesek vagyunk segítségével az NCS2-n kívül más Intel gyártmányú hardverrel dolgozni, például Intel CPU-n és integrált GPU-n. Továbbá népszerű keretrendszereket támogat, mint a TensorFlow, Caffe, MXNet vagy az ONNX. Az eszközkészlet komponensekei közül az alábbiakat emelném ki:
 \begin{description}[noitemsep]
-	\item[Inference Engine] Python API, aminek segítségével különböző gyorsítókártyák megszólíthatók egységes módon.
+	\item[Inference Engine] C++ és Python API, aminek segítségével különböző gyorsítókártyák megszólíthatók egységes módon.
 	\item[Model Optimizer] parancssoros alkalmazás modelleket definiáló állományok átkonvertálására. Ahhoz, hogy a különböző keretrendszerekben megalkotott modelleket egységesen tudja kezelni az Inference Engine, szükség van azok átkonvertálására egy platformfüggetlen struktúrába.
 	\item[OpenCV] az OpenCV közösségi fejlesztésű verziójának Intel hardverekre fordított változata.
 \end{description}
@@ -196,7 +201,7 @@ Egy TensorFlow-ban implementált neurális hálózat átkonvertáláshoz az alá
 	A program további argumentumaival specializálhatjuk a konvertálás folyamatát.
 
 \subsubsection{Inference Engine}
-Az OpenVINO eszközkészlet tartalmaz egy futtatókörnyezetet az \emph{Inference Engine-t}, egy programkönyvtár csomagot melynek központi része a \verb|libinference_engine.so|\footnote{Windows operációs rendszeren természetesen .dll kiterjesztésű és a fájlnév nem tartalmazza a "lib" karaktersort és ez igaz a többi programkönyvtár elnevezésére is} könyvtár. A könyvtárcsomag C++ nyelven íródott, és programozói interfésze ehhez, továbbá Python nyelvhez készült. Az utóbbihoz készült API szerényebb funkcionalitással bír. Feladati az IR-ben tárolt modell beolvasása, az inferencia optimalizálása a célhardveren történő végrehajtáshoz  és annak futtatása. A hardvercsoportokkal történő kommunikációs eljárások külön programkönyvtárakba -- ahogy a dokumentáció hivatkozik rájuk \emph{pluginokba} -- lettek szervezve.
+Az OpenVINO eszközkészlet tartalmaz egy futtatókörnyezetet az \emph{Inference Engine-t}, egy programkönyvtár csomagot melynek központi része a \verb|libinference_engine.so|\footnote{Windows operációs rendszeren természetesen .dll kiterjesztésű és a fájlnév nem tartalmazza a "lib" karaktersort és ez igaz a többi programkönyvtár elnevezésére is} könyvtár. A könyvtárcsomag C++ nyelven íródott, melyhez létezik C++ és python alapú API. Az utóbbihoz készült API szerényebb funkcionalitással bír. Feladati az IR-ben tárolt modell beolvasása, az következtetés (inference) optimalizálása a célhardveren történő végrehajtáshoz  és annak futtatása. A hardvercsoportokkal történő kommunikációs eljárások külön programkönyvtárakba -- ahogy a dokumentáció hivatkozik rájuk \emph{pluginokba} -- lettek szervezve.
 \begin{table}[h]
 	\centering
 	\begin{tabular}{ p{0.3\textwidth} | p{0.63\textwidth} }
@@ -214,14 +219,15 @@ Az OpenVINO eszközkészlet tartalmaz egy futtatókörnyezetet az \emph{Inferenc
 	\label{table:IEplugins}
 \end{table}
 
-Az Inference Engine használatával Python nyelven ismerkedtem meg, így alább ezen nyelvi API használatát mutatom be. Az interfészt a következő osztályok szolgálatatják:
+%Az Inference Engine használatával Python nyelven ismerkedtem meg, így alább ezen nyelvi API használatát mutatom be.
+A fejlesztés során is használt python API-n keresztül mutatom be az Inference Engine-t. Az interfészt a következő osztályok szolgálatatják:
 \begin{description}[noitemsep]
 	\item[\PVerb{ExecutableNetwork}] osztály reprezentál egy modell példányt, amit betöltöttük a pluginba és készen áll az inferenciára;
 	\item[\PVerb{IECore}] egy Inference Engine objektum. Segítségével egy egységes interfészen keresztül kezelhetjük a pluginokat;
 	\item[\PVerb{IENetLayer}] tartalmazza a főbb információkat a modell rétegeiről, továbbá eszköz a rétegek néhány paraméterének módosításához;
 	\item[\PVerb{IENetwork}] minden információt tartalmaz az IR fájlokból beolvasott modellről, és annak paramétereinek módosítását teszi lehetővé;
 	\item[\PVerb{IEPlugin}] a plugin-ok fő interfésze. Célja, hogy inicializálja és bekonfigurálja a plugin-t;
-	\item[\PVerb{InferRequest}] egy interfészt kínál az inferencia futtatásának kérésére az  \verb|ExecutableNetwork| osztályon keresztül, továbbá kezeli az inferencia végrehajtását és a kapott adatokat;
+	\item[\PVerb{InferRequest}] egy interfészt kínál a következtetés kérésére az  \verb|ExecutableNetwork| osztályon keresztül, továbbá kezeli a predikció végrehajtását és a kapott adatokat;
 	\item[\PVerb{InputInfo}] a modell bemeneti rétegének tulajdonságait tartalmazza: \verb|layout| karaktersorozat, a (bemeneti) tenzor elrendezése\footnotemark, \verb|shape| szám n-es a tenzor alakja, \verb|precision| az adatok számábrázolás szerinti típusa;
 	\footnotetext{Elrendezés: a tenzorként reprezentált minták tömbjében az adatok milyen elrendezésben szerepelnek. Például egy képfeldolgozáshoz használt hálózat bemeneti rétege esetén az 'NHWC' elrendezés azt jelenti, hogy a beolvasott tömb 1. tengelye mentén a mintákon(sample Number) való bejárást, 2. és 3. tengelye mentén a magassági(Height) és szélességi(Width), negyedik tengelye mentén a színcsatornák(Channel) szerinti bejárást végezhetünk}%\enlargethispage{-\baselineskip}
 	\item[\PVerb{LayersStatsMap}] a Python \verb|dict| osztályának leszármaztatása, mely újraimplementálja a \verb|update()| metódust, hogy módosítható legyen a rétegek finomhangolásának statisztikái;
@@ -229,7 +235,8 @@ Az Inference Engine használatával Python nyelven ismerkedtem meg, így alább 
 	\item[\PVerb{OutputInfo}] a modell bemeneti rétegének tulajdonságait tartalmazza hsonlóan az \verb|InputInfo| osztályhoz;
 \end{description}
 
-Egy elemi alkalmazás implementációjához, mely inferenciát végez az NCS2 eszközön szükség van az \verb|IENetwork| és \verb|IECore| vagy \verb|IEPlugin| osztályokra továbbá létrejön egy \verb|ExecutableNetwork| egyed, amivel az inferenciát elvégeztetjük. A modell feltöltése az eszközre, majd az inferencia futtatása a \ref{lst:IEPython}~kód szerint tehető meg.
+Egy elemi alkalmazás implementációjához, mely inferenciát végez az NCS2 eszközön szükség van az \verb|IENetwork| és \verb|IECore| vagy \verb|IEPlugin| osztályokra továbbá létrejön egy \verb|ExecutableNetwork| egyed, amivel az hálózatot futtatjuk. %A modell feltöltése az eszközre, majd a hálózat futtatása a \ref{lst:IEPython}~kód szerint tehető meg.
+A modell feltöltése az eszközre, annak alkalmazásban történő futtatását az eszközön a \ref{lst:IEPython}~kód szemlélteti.
 \begin{minipage}{\textwidth}
 	\begin{lstlisting}[language=Python,caption=Inference Engine használata PYthon-ból ]
 from openvino.inference_engine import IENetwork, IEPlugin
@@ -243,7 +250,7 @@ if net.inputs[i_layer_key].shape == list(samples.shape) :
 	\end{lstlisting}\label{lst:IEPython}
 \end{minipage}
 %A model.xml fájl több input réteget is tartalmazhat (type="Input"), ezért az IENetwork inputs mezeje egy olyan dict, aminek kulcsa az input rétegek "name" mezejével, azaz a nevével egyezik, az érték pedig egy InputInfo objektum
-Az \verb|IEPlugin| rendelkezik egy \verb|load()| metódussal, mely egy \verb|IENetwork| objektumtól megkapja a hálózat adatait és példányosít egy \verb|ExecutableNetwork| egyedet. Ezen objektum \verb|infer()| metódusával végeztethetjük az inferenciát szinkron módon. Lehetőség van aszinkron üzemmódra az \verb|async_infer()| metódussal. Mindkét metódus használata esetén át kell adni egy táblázat típusú paramétert (Python \verb|dict| osztály) melynek kulcsértékei a bemeneti rétegek nevei (ez egyezik az IENetwork inputs attribútumának kulcsával), a kulcsokhoz rendelt értékek pedig a minták megfelelő alakú, \verb|numpy.ndarray| típusú tenzora. A \verb|res| változó szintén egy táblázat lesz, amiben a kimeneti rétegek neveihez, mint kulcsokhoz van rendelve az inferencia eredménye. 
+Az \verb|IEPlugin| rendelkezik egy \verb|load()| metódussal, mely egy \verb|IENetwork| objektumtól megkapja a hálózat adatait és példányosít egy \verb|ExecutableNetwork| egyedet. Ezen objektum \verb|infer()| metódusával végeztethetjük az inferenciát szinkron módon. Lehetőség van aszinkron üzemmódra az \verb|async_infer()| metódussal. Mindkét metódus használata esetén át kell adni egy táblázat típusú paramétert (Python \verb|dict| osztály) melynek kulcsértékei a bemeneti rétegek nevei (ez egyezik az IENetwork inputs attribútumának kulcsával), a kulcsokhoz rendelt értékek pedig a minták megfelelő alakú, \verb|numpy.ndarray| típusú tenzora. A \verb|res| változó szintén egy táblázat lesz, amiben a kimeneti rétegek neveihez, mint kulcsokhoz van rendelve a következtetés eredménye. 
 
 
 \section{Google Edge TPU}
@@ -274,8 +281,7 @@ Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten m�
 
 \subsection[NNP-T]{Neural Network Processor for Training}
 Az NNP-T egy egylapkás rendszer vagy rendszerchip, melynek fejlesztésénél fontos szempont volt az egyensúly a számítási teljesítmény, a perifériák közötti kommunikáció  sebessége és memória használat között. Ezt támogatja 
-a lapka memóriájába már betöltött adatok minél hatékonyabb újrafelhasználásának elősegítése, továbbá a kötegelt adatfeldolgozás optimalizálása. Könnyen skálázható rendszert lehet építeni belőle, ugyanis ezt beépített megoldások segítik. A mély tanulás területén megfigyelhető trendek figyelembevételével tervezték, hogy a jövőbeli munkafolyamatokat is támogassa.
-%TODO utolsó mondatot lehet nem kéne erőltetni
+a lapka memóriájába már betöltött adatok minél hatékonyabb újrafelhasználásának elősegítése, továbbá a kötegelt adatfeldolgozás optimalizálása. Könnyen skálázható rendszert lehet építeni belőle, ugyanis ezt beépített megoldások segítik. A jövőbeli munkafolyamatokat is támogatására a számítási egységek utasításkészlete programozható.
 
 \subsubsection{Hardver tulajdonságai}
 \paragraph[Soc]{Rendszerchip}

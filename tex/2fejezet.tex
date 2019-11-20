@@ -8,7 +8,8 @@ A mély tanulás, azon belül is a mesterséges neurális hálózatok gyors fejl
 %TODO Nincs Befejezve
 \section{Keras}
 
-A Keras egy python nyelven írt programkönyvtár, vagy ahogy önmagát hívja ''magas szintű neurális hálózat API''\cite{web:Keras}. Érdekessége, hogy más olyan keretrendszerekkel együttesen használható, amelyek a Keras-hoz hasonlóan magas absztrakciós szinten biztosítják a hálózatok implementálását, mint például a TensorFlow. A Keras-ról szerzett tudásom javát Chollet könyvéből és a keretrendszer dokumentációjából szereztem.\cite{Chollet}\cite{web:Keras}.
+A Keras egy python nyelven írt programkönyvtár, vagy ahogy önmagát hívja ''magas szintű neurális hálózat API''\cite{web:Keras}. Érdekessége, hogy más olyan keretrendszerekkel együttesen használható, amelyek a Keras-hoz hasonlóan magas absztrakciós szinten biztosítják a hálózatok implementálását, mint például a TensorFlow. %A Keras-ról szerzett tudásom javát Chollet könyvéből és a keretrendszer dokumentációjából szereztem.\cite{Chollet}\cite{web:Keras}.
+Chollet könyve részletesen bemutatja a keretrendszer használatát, továbbá nyíltan hozzáférhető annak dokumentációja is.\cite{Chollet}\cite{web:Keras}
 
 \subsection{Neurális hálózat definiálása}
 
@@ -32,7 +33,7 @@ Mindkét réteghez tartozik egy \emph{activation} paraméter, mely string típus
 
 A \verb|Keras.layers| modulban A \verb|Dense| osztályon kívül implementálva vannak konvolúciós, összefésülő, zaj, stb. rétegek, melyek a fenti módon tetszés szerint egymásra szervezhetőek a keretrendszerben, így szinte tetszőleges hálózat alakítható ki.
 
-\subsection{Hálózat betanítása és inferencia futtatása}
+\subsection{Hálózat betanítása és betanított hálózat futtatása}
 \label{subsect:inference}
 A megalkotott hálózatot a \verb|network| objektum definiálja. Hogy tanítható legyen el kell látni egy optimizálóval és egy veszteségfüggvénnyel, melyek együtt adják a hálózatot betanító algoritmust. A \verb|compile()| metódus ,,összerakja'' a neurális hálózatot a betanítóval, a \verb|fit()| pedig elvégzi a tanítást, és \emph{epoch}-ok számának megfelelő méretű tömböket tartalmazó objektum referenciájával tér vissza, mely tömbökben össze vannak gyűjtve a veszteségfüggvény értékei és a felhasználói metrikák eposzonként. 
 \begin{minipage}{\textwidth}
@@ -49,9 +50,8 @@ history = network.fit(train_datas,
 \end{minipage}
 
 A \verb|train_datas| és \verb|train_labels| a tanítókészletet alkotó minták és azok címkéi, a várt kimeneti értékek. Ezek elemszáma kötelezően meg kell egyezzen. A \emph{batch\_size} paraméterrel, ami az egy \emph{epoch}-ban egyszerre feldolgozandó adatokat jelenti. A betanítás végén a \verb|network| egy \emph{betanított}, a célfeladat megoldására felhasználható neurális hálózat lesz. Alkalmazásához a \verb|predict()|metódus használatos,mely a paraméterként megadott bemeneti adatokhoz tartozó predikciókkal tér vissza.
-%TODO 
 \begin{minipage}{\textwidth}
-\begin{lstlisting}[language=Python, caption=inferencia]
+\begin{lstlisting}[language=Python, caption=Az eszközre töltött hálózat futtatása az adatokon]
 	result = network.predict(datas)
 \end{lstlisting}
 \end{minipage}
