@@ -5,7 +5,6 @@
 
 \section{A neurális hálózatok elmélete}
 \label{sect:neuralNetworkTheory}
-% TODO ezt a bekezdést még dolgozd át!
 Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}
 Kiderült, hogy ezek a struktúrák kiválóan alkalmasak osztályozási és regresszió számítási problémák megoldására, és a mai gépi tanulással kapcsolatos fejlesztések középpontjába került.
 
@@ -51,7 +50,7 @@ Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni.
 
 
 \section{Deep Learning}
-A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{Chollet} szereztem, melynek a témához kapcsolódó részleteit alább bemutatom.
+A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{chollet} szereztem, melynek a témához kapcsolódó részleteit alább bemutatom.
 
 A gépi taunlás egy teljesen más programozási paradigmát jelent, ugyanis a klasszikus programozás során a feldolgozandó adatokhoz a programozó adja az adat feldolgozásának szabályait, amit végig követve a gép kiszámítja a kívánt eredményt. Ezzel szemben a gépi tanulás során a programozó az adathoz  a kívánt eredményt adja meg, amiből a gép felállítja a megoldáshoz vezető szabályokat.%\cite{Chollet}
 
@@ -61,11 +60,10 @@ A neurális hálózatok rétegeltsége adja a \emph{mélységet} a gépi tanulá
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.8\columnwidth]{fig/digit_classification.png}
-	\caption{Írott szám hozzárendelése az ábrázolt számértékhez}
+	\caption{Írott szám hozzárendelése az ábrázolt számértékhez\protect\footnotemark}
 	\label{fig:digit_classification}
-	\footnotemark
 \end{figure}
-\footnotetext{Forrás:\protect\cite{Chollet}}
+\footnotetext{Forrás:\protect\cite{chollet}}
 
 Itt kapcsolódik össze a neurális hálózat és a mély tanulás. Az \ref{sect:neuralNetworkTheory} alfejezetben kifejtettem, hogy a neurális hálózat szinapszisainak paraméterezéséért felelős $\vec{w}$ súlyok és a neuronok küszöbszintjének állítására szolgáló $\vec{b}$ vektorok összes koordinátájának száma hatalmas lehet, ---alkalmazástól függően több százezer, akár millió, egymástól független változóról beszélünk--- tehát beállításukhoz valamilyen algoritmusra van szükség. Ezért a neurális hálózatok másik komponense, egy tanulási algoritmus, mely beállítja ezen paramétereket. Négy  megközelítés létezik, amikor gépi tanulásról van szó.
 
@@ -80,7 +78,7 @@ Vizsgálódásomat az \emph{ellenőrzött tanulásra} korlátoztam, így a tová
 
 \section{Függvények, algoritmusok}\label{sec:fuggvenyek-algoritmusok}
 Az alábbiakban szeretném megfogalmazni a neurális hálózatokban alkalmazott tipikus függvényeket és algoritmusokat.
-%TODO Kicsit rövid
+
 \subsection{Neuronok aktivációs függvényei}
 Mint korábban kifejtettem minden neuron kimenete egy függvény kiértékelése, melynek paramétere a bemenetek súlyozott összege. Ezt a függvényt hívjuk aktivációs függvénynek. 
 
@@ -126,15 +124,15 @@ Teljes néven \emph{rectified linear unit} függvény vagy közismerten rámpaf�
 \subsection{Veszteség függvények}
 A neurális hálózat tanításához szükséges meghatároznunk egy $c(\vec{y},\vec{y'})$ veszteségfüggvényt, mely megadja a hálózat kimenetének eltérését az elvárt eredményhez képest adott súlyok mellett. Ezt az eltérést egy skalárértékként képezi le. Tanítás során ezt a függvényt kell minimalizálni.
 %Formálisan egy $c:W\times B \mapsto \mathbb{R}^+$ függvény, $W,B$, a súlyokat és  büntetőtagokat egybefogó vektorok halmaza. Ezen többváltozós függvény képe a \emph{veszteségfelület}.
-%TODO c(w,b) vagy c(y,y') helyes megközelítés?
 
-\paragraph[MSE]{Átlagos négyzetes hiba}
+\paragraph[MSE]{Átlagos négyzetes hiba}\label{par:mse}
 Többosztályos problémánál a neurális hálózat egy valószínűségi változó eloszlása az összes osztályon. $\vec{y}$ vektor a hálózat válasza a $\vec{x}$ bemenetre, $\vec{y'}$ pedig a kívánt kimenet vektora --egy egységvektor, melynek 1 értékű koordinátája reprezentálja a megfelelő osztályt. Erre az esetre olyan veszteségfüggvényt alkalmazhatunk mely ekvivalens a $(\vec{x},\vec{y})\in Z$ tanítási készletből számított $MSE$ átlagos négyzetes hibáinak átlagával.
 \begin{align*}
 	MSE(\vec{y},\vec{y'}) = \frac{1}{n}\sum_{i=1}^{n} (y_i - y'_i)^2\\
 	C(w,b) \equiv \frac{1}{m}\sum_{j=1}^{m} MSE(\vec{y}_j,\vec{y'}_j)\\
 \end{align*}
 A fenti egyenletekben n az kimeneti vektor dimenziója, m a tanító minták száma.
+Chollet szerint osztályozási problémánál érdemes kereszt-entrópiát veszteségfüggvényként alkalmazni az átlagos négyzetes hiba helyett.\cite{chollet}
 	%
 	%\begin{displaymath}
 	%	C(w,b)\equiv\frac{1}{2n}\sum_x\|y-y'\|^2\quad\footnote{forrás\cite{Nielsen2015}}
@@ -146,16 +144,19 @@ Osztályozási feladatoknál olyan módszert használhatunk a veszteség  vagy h
 \begin{displaymath}
 	H(y,y')= -\sum_{x\in \mathcal{X}}y(x)\log y'(x)
 \end{displaymath}
-
 A mély tanuláshoz használt keretrendszereknél gyakran másként implementálják a kereszt-entrópiát kétosztályos és többosztályos esetre. Ezekre az implementációkra \emph{bináris kereszt-entrópia} és \emph{kategorikus kereszt-entrópia} néven hivatkoznak.
 
 \subsection{A hálózat tanító algoritmusai: az optimalizálók}
-Korábban említettem, hogy egy neurális hálózat tanításán azt az eljárást értjük, amely során a hálózat paramétereit változtatjuk. Neurális hálózatoknál gradienscsökkentésen alapuló technikákat alkalmazunk. A módszer alapját az az elképzelés adja, hogy a meghatározunk egy $C(\vec{w}_1,b_1,\dots,\vec{w}_L,b_L)$ függvényt, mely a hálózat összes paramétere alapján meghatároz egy $E$ hibaértéket, ami a tanítási folyamat egy ciklusa során kapott veszteségértékek átlaga. Ezen függvény képe egy úgymond \emph{hibafelület}, melynek megkeressük  minimum helyeit tanítás során. Gyakorlatban nem kivitelezhető a globális minimum meghatározása, és lokális minimumok keresését is iteratív módszerekkel célszerű végezni. Többváltozós függvények esetén a gradiens vektor ellentettje ($-\nabla f$) segítségével meghatározható, hogy adott pontban -- azaz megadott függvényparaméterek esetén -- a paramétereket milyen mértékben változtassuk, hogy a függvény kimeneti értékét a legdrasztikusabb mértékben csökkentsük.
-
+Korábban említettem, hogy egy neurális hálózat tanításán azt az eljárást értjük, amely során a hálózat paramétereit változtatjuk. Neurális hálózatoknál gradienscsökkentésen alapuló technikákat alkalmazunk. %A módszer alapját az az elképzelés adja, hogy  meghatározunk egy $C(\vec{w}_1,b_1,\dots,\vec{w}_L,b_L)$ függvényt, mely a hálózat összes paramétere alapján meghatároz egy $E$ hibaértéket, ami a tanítási folyamat egy ciklusa során kapott veszteségértékek átlaga.
+A módszer megértéséhez, most tekintsünk úgy a költségre, mint a hálózat konfigurációjának jóságát értékelő függvényre.
+$$ C(\vec{w}_1,b_1,\dots,\vec{w}_L,b_L) $$
+Ezen függvény képe egy úgymond \emph{hibafelület}, melynek megkeressük  minimum helyeit tanítás során. Gyakorlatban nem kivitelezhető a globális minimum meghatározása, és lokális minimumok keresését is iteratív módszerekkel célszerű végezni. Többváltozós függvények esetén a gradiens vektor ellentettje ($-\nabla f$) segítségével meghatározható, hogy adott pontban -- azaz megadott függvényparaméterek esetén -- a paramétereket milyen mértékben változtassuk, hogy a függvény kimeneti értékét a legdrasztikusabb mértékben csökkentsük.
 Belátható, hogy $C$ ekvivalens a $c$-k átlagával.
 \begin{align*}
-\frac{1}{n}\sum_{i=1}^{n}c(y_i,y'_i) \equiv C(\vec{w}_1,b_1,\dots,\vec{w}_L,b_L)\\
+	\frac{1}{n}\sum_{i=1}^{n}c(y_i,y'_i) \equiv C(\vec{w}_1,b_1,\dots,\vec{w}_L,b_L)\\
 \end{align*}
+%TODO konzultálj ezzel kapcsolatban
+
 A gradienscsökkentés naiv megközelítése pedig a következő:
 \begin{align*}
 	\vec{W_i}=(\vec{w_i}_1,b_{i1},\dots\vec{w_i}_L,b_{iL})\\
@@ -190,5 +191,11 @@ $$ W_{i+1} = W_i - \frac{\eta}{\sqrt{v(w_,y)}} \nabla C(W_i) $$
 Tanítás során a veszteségfüggvény sztochasztikusan konvergál a nullához és ezzel együtt a hálózat egyre pontosabban következtet a tanító készlet adataiból. A tapasztalat azonban az, hogy ez nem feltétlenül igaz más, a tanítás során nem használt adatokra, sőt elérkezhet a hálózat egy olyan állapotba, amikor a használat közben rosszabbul teljesít, mint a tanítás végén. Ilyenkor a hálózat specializálódik a tanító adathalmazra. Ezt a jelenséget, amikor a hálózat jobban következtet a tanítás során használt adathalmazon \emph{túlilleszkedésnek} nevezzük és \emph{alul-illeszkedésnek} azt, mikor a hálózat nem elég pontos, más szóval túl kevés tanítási cikluson esett még át. Hogy a hálózat a hipotézis térből a megfelelő függvények -- nem törekszünk az adatok egy tökéletes leképezésére -- valamelyikét modellezze, szükséges a tanítást felügyelni, hogy az ne illeszkedjen se túl, se alul.
 A gyakorlatban ezért felügyeljük a tanítási folyamatot, és az optimalizálás minden ciklusában a hálózatnak egy külön validálásra szánt tanítókészletet adunk, és ezekre nem optimalizáljuk a hálózatot. Ezután össze tudjuk hasonlítani, hogy változik a hálózat hibája a tanító és validáló adatok mellett. Ennek tükrében abban a ciklusban ér el a hálózat a jól illesztett állapotot, amelyben a validációs veszteség érték eléri a minimumot.
 
-\subsubsection{Regressziós optimalizálás}
-%TODO Nincs befejezve
+\subsubsection{Regresszió optimalizálás}
+%A bemeneti adatok tulajdonság szerinti normalizálása: x-átlag(x)/szórás(x) $$ s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2} $$
+%
+Osztályozási problémákon túl a mesterséges neurális hálózatok felhasználhatóak regresszióanalízisre. Ilyen feladatra tervezett hálózat kimeneti rétegének neuronjai aktivációs függvény nélküliek, tehát lineárisan képezik le a bemenetüket. Erre a kézenfekvő magyarázat, hogy a várt eredmény egy széles skálán mozoghat és bárminemű aktivációs függvény alkalmazása lekorlátozza az kimeneti adatok halmazát. Természetesen a többi réteg esetében alkalmazunk aktivációs függvényeket. Tanítás során az átlagos négyzetes hibafüggvényt --~amiről a \ref{par:mse}~bekezdésben már kitértem~-- alkalmazzuk veszteségfüggvény gyanánt. A hálózat pontosságának mérésére érdemes kiszámolni a hálózat következtetésének és az elvárt eredménynek átlagos abszolút eltérését, mint metrikát. A gyakorlatban a regressziószámítás sok változó skálán mozgó értékkel történik. A széles tartományon mozgó adatokon a hálózat nehezebben tanul, ezért a gyakorlatban érdemes a bemeneti adatokat normalizálni:
+$$ s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2} $$
+ahol $x$ a bemenő adathalmaz egy jellemzőjének egyetlen mintapontja, $n$ az egy jellemzőhöz tartozó minták száma, $\bar{x}$ pedig a minták átlaga.
+Regressziószámítás a statisztikai alkalmazáson túl objektum detektálási feladatnál is felmerül: az objektumhatároló keretekhez tartozó vektorokat is többváltozós regresszióanalízissel határozhatjuk meg.
+%TODO konzultálj

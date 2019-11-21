@@ -1,18 +1,24 @@
 %-------------------------------------------------------------------------------
 \chapter{Mély tanuló alkalmazások fejlesztése}
 %-------------------------------------------------------------------------------
-A mély tanulás, azon belül is a mesterséges neurális hálózatok gyors fejlődősét és részben népszerűségét a hozzá készített programozási keretrendszereknek köszönheti, melyek java szabad hozzáférésű. Ezek a keretrendszerek arra hivatottak, hogy támogassák a neurális hálózatok fejlesztését új programozási módszertant adva. Már létező programozási nyelvekre épülnek, leginkább python-ra. Ezekben a keretrendszerekben egyszerűen implementálhatunk neurális hálózatokat úgy, hogy egyfajta nyelvi eszközkészletet adnak neurális hálózatok definiálására.
+A mély tanulás, konkrétabban a mesterséges neurális hálózatok gyors fejlődősét és részben népszerűségét a hozzá készített programozási keretrendszereknek köszönheti, melyek java szabad hozzáférésű. Ezek a keretrendszerek arra hivatottak, hogy támogassák a neurális hálózatok fejlesztését új programozási módszertant adva. Már létező programozási nyelvekre épülnek, leginkább python-ra. Ezekben a keretrendszerekben egyszerűen implementálhatunk neurális hálózatokat úgy, hogy egyfajta nyelvi eszközkészletet adnak neurális hálózatok definiálására.
 
 \section{TensorFlow}
 
 %TODO Nincs Befejezve
 \section{Keras}
-
-A Keras egy python nyelven írt programkönyvtár, vagy ahogy önmagát hívja ''magas szintű neurális hálózat API''\cite{web:Keras}. Érdekessége, hogy más olyan keretrendszerekkel együttesen használható, amelyek a Keras-hoz hasonlóan magas absztrakciós szinten biztosítják a hálózatok implementálását, mint például a TensorFlow. %A Keras-ról szerzett tudásom javát Chollet könyvéből és a keretrendszer dokumentációjából szereztem.\cite{Chollet}\cite{web:Keras}.
-Chollet könyve részletesen bemutatja a keretrendszer használatát, továbbá nyíltan hozzáférhető annak dokumentációja is.\cite{Chollet}\cite{web:Keras}
+A Keras egy python nyelven írt programkönyvtár, vagy ahogy önmagát hívja ''magas szintű neurális hálózat API''\cite{web:Keras}. Fejlesztésébe François Chollet kezdett bele. Érdekessége, hogy más olyan keretrendszerekkel együttesen használható, amelyek a Keras-hoz hasonlóan magas absztrakciós szinten biztosítják a hálózatok implementálását, mint például a TensorFlow.
+%A Keras-ról szerzett tudásom javát Chollet könyvéből és a keretrendszer dokumentációjából szereztem.\cite{Chollet}\cite{web:Keras}.
+Chollet könyve részletesen bemutatja a keretrendszer használatát, továbbá nyíltan hozzáférhető annak dokumentációja is.\cite{chollet}\cite{web:Keras}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{fig/keras_software_stack}
+	\caption{Keras szoftver rendszer\protect\footnotemark}
+	\label{fig:kerassoftwarestack}
+\end{figure}
+\footnotetext{Forrás:\protect\cite{chollet}}
 
 \subsection{Neurális hálózat definiálása}
-
 Keras-ban egy neurális hálózatot \emph{model}-nek hívunk (gyakran máshol is így neveznek egy konkrét neurális hálózatot). Egy \emph{model} létrehozásához a \verb|Keras.models| modulban definiált metódusokkal lehetséges. A keretrendszerben az adatokat tenzorokként kell reprezentálnunk, ezért érdemes a \emph{numpy}\footnote{lásd:\url{https://numpy.org/}} nevű python csomaggal együtt használni. A keretrendszer tetszőleges alakú tenzorokat képes kezelni, tehát nincs megkötés arra vonatkozóan, hogy egy réteg bemenete vektor, mátrix vagy kiterjedtebb struktúrában -- magasabb dimenziójú tenzorban -- szerepeljen. A következő kódokban szeretném szemléltetni a Keras használatának módját.
 
 A \ref{lst:defLayers} kód egy két rétegből álló neurális hálózat definiálását mutatja be.

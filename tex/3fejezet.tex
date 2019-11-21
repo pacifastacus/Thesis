@@ -8,6 +8,7 @@ A mai nagy teljesítményű párhuzamos számítási rendszerek igyekeznek kiakn
 A párhuzamos adatfeldolgozás miatt ezek a rendszerek elsősorban grafikus processzor architektúrákat --~kiváltképpen \emph{általános célú grafikus processzorokat} (GPGPU)~-- alkalmaznak hagyományos CPU-k mellett.\footnote{Hibrid számítási rendszereknél előfordul még az FPGA-k és a DSP-k használata is, azonban szakdolgozatomban erre nem fogok kitérni.}Sok olyan rendszer épülhetett, ahol pár általános célú processzor mellett több GPGPU működött, azonban a legtöbb ilyen rendszer esetében a CPU-k pusztán az a az operációs rendszer futtatásában és számítási feladatok szétosztásában vett részt. Mély tanulás esetén előfordulhatnak olyan feladatok, amiket több CPU magra lehetne bízni.
 
 A következő alfejezetekben szeretnék bemutatni olyan szoftvereket és hardvereket, melyek lehetséges építőkövei egy ilyen mély tanulásra használható hibrid számítási rendszernek.
+%TODO konzultálj
 
 \section{nGraph}
 Az \ref{sect:hybridDL}~alfejezetben említett hibrid számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
@@ -83,16 +84,11 @@ Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform f
 
 Összegzésül tehát az nGraph feldarabolja a neurális hálózathoz tartozó számítási gráfot processzor architektúrának megfelelően, majd ezen gráfokat a PlaidML lefordítja a megfelelő kódokra, melyeket aztán a célprocesszorokra lefordítunk és futtatunk.
 
-\section{Mély tanulásra optimalizált grafikus gyorsítók}
+\section{Grafikus processzorok a mély tanulásban}
 Változatos megoldások születnek a mély tanulás gyorsítására a hardvergyártók részéről. Kezdetben a nagy teljesítményű általános célú grafikus processzorokat (GPGPU) alkalmazták szinte kizárólag a neurális hálózatokkal kapcsolatos számításokhoz, mert ezek az architektúrák kifejezetten hatékonyan tudnak vektor és mátrixműveleteket végezni --~tulajdonképpen pont erre tervezték őket. Azonban ahogy elkezdett terjedni a mély tanulás olyan területeken is, ahol számít az alacsony hűtésigény, kiegyensúlyozott energiafogyasztás vagy a hordozhatóság, új architektúrák is kezdtek megjelenni. A következőkben bemutatok pár --~a mély tanulásban használt~-- hardvert és két szoftveres környezetet, melyek jól körvonalazzák, milyen irányba fog fejlődni a gépi tanulás technológiája.
-
-\subsection{Intel grafikus processzorok}
-Az Intel nagyon CPU-ját integrált grafikus processzorral szereli, szinte csak a munkaállomásokra szánt Xeon család processzorai nem tartalmaznak GPU-t (kivétel a Xeon E3 széria).\cite{wiki:listOfIGPU} Az Intel --~akárcsak a többi nagy hardvergyártó~-- ki akarja venni a részét a deep learning technológiák  fejlesztésében és olyan szoftvereket fejlesztett ki --~új architektúrák mellett~--, melyekkel mély tanulásra hasznosítható a szinte mindenütt jelenlévő GPU-ik számítási kapacitása. Ezek közül a legfontosabb az OpenCL alapú \emph{clDNN} programkönyvtár, mely lehetőség ad, hogy az cég processzoraiba integrált grafikus processzorokat mély tanulásra használhassuk. A másik a korábban bemutatott nGraph, mely több másik architektúra mellett Intel GPU-kat is képes kezelni.
-%TODO Nincs befejezve
 
 \subsection{Nvidia által fejlesztett gyorsítókártyák}
 Abban az időben mikor a mély tanulás bekerült a köztudatba a grafikus processzor gyártóknak olyan megoldásaik voltak, amikkel általános számítási feladatok programozását tette lehetővé a termékeiken. Ilyen az Nvidia CUDA (\emph{Compute Unified Device Architecture}) is, ami egy párhuzamos számítási platform és alkalmazásprogramozási interfész modell. Maga a platform egy olyan szoftverréteg, mely közvetlen hozzáférést enged a GPU utasításkészletéhez.\cite{wiki:cuda} Az API pedig olyan programozási eszközöket nyújt, amivel hatékonyan lehet CUDA képes GPU-n futó programot írni. A cég által közzé tett dokumentációk alapján nagy vonalakban bemutatnám a neurális hálózatok fejlesztéshez használható eszközeit\cite{web:cudnn}
-
 Ahhoz, hogy neurális hálózatokat futtassunk CUDA platform szükséges a CuDNN (\emph{CUDA Deep Neural Network Library}) könyvtárcsomag, mely a nélkülözhetetlen elemi függvényeket implementálja:
 \begin{enumerate}
 	\item Konvolúció
@@ -132,6 +128,19 @@ Igen nagy teljesítményű grafikus kártya, mely a cég \emph{turing} mikroarch
 % 350~W felvett teljesítmény
 % TDP: 70~W
 Ezt a grafikus kártyát kifejezetten adatközpontok komponenseként szánták, ezért nem is szolgáltat videó jelet. Számítási teljesítményes is bizonyos szempontból szerényebb a TITAN RTX-nél. Szintén turing architektúrájú TU104 processzora 2560~CUDA magot tartalmaz. A szerényebb felszereltségnek ugyancsak az adatközponti felhasználása miatt van jelentőssége, hogy így kisebb áramfelvétel és hőleadás mellett tudjon üzemelni -- 350~W ajánlott leadási teljesítmény és összehasonlításképp a TITAN RTX \emph{Thermal Design Pointja} 280~W, míg ennek a kártyának csupán 70~W. Egyszeres pontosságú lebegópontos műveleteket alkalmazó számítások elméleti sebessége 8,141~TFLOP/s, viszont a félszeres pontosságnál nyolcszor gyorsabb, azaz ekkor 65,13~TFLOP/s az elméleti sebessége. Ebből látszik, hogy ez a kártya kifejezetten mély tanuláshoz és olyan alkalmazásokhoz lett optimalizálva, ahol félszeres pontosságú lebegőpontos számításokat kell végezni túlnyomó részt. A teljesség kedvéért megemlítem, hogy a kártya 16~GB szintén GDDR6 típusú memóriával lett felszerelve, melynek sávszélessége 320~GB/s (256~bites buszszélesség).
+%TODO konzultálj
+
+\subsection{Intel grafikus processzorok}
+Az Intel nagyon CPU-ját integrált grafikus processzorral szereli, szinte csak a munkaállomásokra szánt Xeon család processzorai nem tartalmaznak GPU-t (kivétel a Xeon E3 széria).\cite{wiki:listOfIGPU} Az Intel --~akárcsak a többi nagy hardvergyártó~-- ki akarja venni a részét a deep learning technológiák  fejlesztésében és olyan szoftvereket fejlesztett ki --~új architektúrák mellett~--, melyekkel mély tanulásra hasznosítható a szinte mindenütt jelenlévő GPU-ik számítási kapacitása. Ezek közül a legfontosabb az OpenCL alapú \emph{clDNN} programkönyvtár, mely lehetőség ad, hogy az cég processzoraiba integrált grafikus processzorokat mély tanulásra használhassuk. A másik a korábban bemutatott nGraph, mely több másik architektúra mellett Intel GPU-kat is képes kezelni.
+
+\paragraph{Intel Xe grafikus processzorarchitektúra}
+Nem olyan rég az Intel bejelentette, hogy készül egy új grafikus processzor családot, az Xe szériát piacra dobni. Eltérően az eddig általuk készített GPU szériáktól az Xe lapkák diszkrét --~tehát nem CPU-ba integrált~-- grafikus processzorok lesznek. Előzetes bejelentés alapján 2020-ra kerül forgalomba, de jelenleg kevés információt ad közre a gyártó a processzorról és az azt tartalmazó videokártyáról.\cite{tyson-hexus} Ezekkel a chipekkel a vállalat a nagyvállalati felhasználókat célozza meg. Adatközpontok és szuperszámítógépek alkotórészének szánják, hangsúlyt fektetve a mesterséges neurális hálózatokban való felhasználásra. Tesztelés alatt ál a DG1 kódnévvel ellátott grafikus kártya.\cite{allan-techradar} 
+
+Dr. Cutress anandtech.com oldalon megjelent cikkében jobban részletezi, mi várható az Xe szériától.\cite{cutress-anandtech} Egyrészt az Intel az új architektúrával az összes olyan technológiai ágazatot le akarja fedni, melyek grafikus processzorokra alapoznak. Ezt úgy kivitelezi, hogy az Xe --~mely egy architektúrát takar~-- több mikro- és szub-architektúra alkotja.
+Hogy szuperszámítógépes környezetben is megállja a helyét ezek a chipek --~vagy a széria néhány darabja~-- kezelni tudja a dupla pontosságú lebegőpontos számításokat. A kifejezetten HPC rendszerekre szánt GPU kódneve \emph{Ponte Vecchio}
+
+Ezzel az új termékcsaláddal a vállalat komoly versenytársa lehet majd az Nvidia-nak, mert emellett kifejleszt a CUDA-hoz hasonló \emph{OneAPI} nevű programozási modellt, mellyel egységesen lehet számításokat végezni Intel CPU-in, GPU-in és FPGA-in.\cite{patrizio-networkworld}
+%TODO konzultálj
 
 \section{Myriad X és az Intel Neural Computer Stick 2}
 %Motiváció: Valós idejű alkalmazások esetén szükséges az offline számítás -> GPU - lehetséges, de erőforrás igényes(áram és hűtés) és nagy méretű 
@@ -277,7 +286,7 @@ Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méret
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
 
-Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  rendszerchipeket, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I). Mint nevük is mutatja ezek kifejezetten mély tanulás gyorsításra lettek fejlesztve és úgy tervezték őket, hogy jól skálázható rendszert alkossanak. Ezeket a hardvereket a konferencián elmondottak alapján mutatnám be.\cite{yt:nnpt}\cite{yt:nnpi} Ebben az alfejezetben szereplő ábrák a konferencián levetített fóliákból származnak.\cite{slide:nnpt}\cite{slide:nnpi}
+Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  rendszerchipeket, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I). Mint nevük is mutatja ezek kifejezetten mély tanulás gyorsításra lettek fejlesztve és úgy tervezték őket, hogy jól skálázható rendszert alkossanak. Ezeket a hardvereket a konferencián elmondottak alapján mutatnám be.\cite{yt:nnpt}\cite{yt:nnpi} Ebben az alfejezetben szereplő ábrák a konferencián levetített fóliákból származnak.\cite{yang-nnpt}\cite{Wechsler-nnpi}
 
 \subsection[NNP-T]{Neural Network Processor for Training}
 Az NNP-T egy egylapkás rendszer vagy rendszerchip, melynek fejlesztésénél fontos szempont volt az egyensúly a számítási teljesítmény, a perifériák közötti kommunikáció  sebessége és memória használat között. Ezt támogatja 
