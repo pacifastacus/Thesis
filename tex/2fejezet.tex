@@ -32,7 +32,9 @@ network.add(layers.Dense(15, activation='relu', input_shape=(784,)))
 network.add(layers.Dense(10, activation='softmax'))
 \end{lstlisting}\label{lst:defLayers}
 \end{minipage}
-Ezen lista 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz.Keras-ban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy sűrűn kapcsolt réteget implementál. %TODO sürün kapcsolt réteg definíciója
+Ezen lista 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz.Keras-ban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy sűrűn kapcsolt réteget implementál. 
+%Dense = full-connected layer
+%TODO sürün kapcsolt réteg definíciója
 A réteg bemenetként $28 *28 = 784$ elemű vektorokból álló mátrixot tud fogadni, másik dimenziója nem meghatározott. Ez a kötegelt adatfeldolgozás szempontjából fontos, tehát a bemeneti vektorok folyamát egyik dimenziójában nem meghatározott méretű tenzorral definiáljuk. A réteg kimenete egy 32 dimenziós vektor. A következő rétegnél nem adtuk meg a bemenet méretét, a keretrendszerben ez implicit módon rendelődik a réteghez. 
 
 Mindkét réteghez tartozik egy \emph{activation} paraméter, mely string típus kell legyen, és a réteg neuronjaihoz tartozó aktivációs függvényt adja meg. A példában a \verb|'relu'| és \verb|'softmax'| string a \ref{sec:fuggvenyek-algoritmusok} fejezet \eqref{eq:relu} és \eqref{eq:softmax} függvényére utal, azaz ezen bemeneti paraméterek esetén olyan \verb|Dense| objektum jön létre, mely ilyen aktivációs függvényekkel rendelkező neuron réteget valósít meg.
@@ -78,4 +80,3 @@ A tanítás felügyeletére a tanításhoz rendelkezésre álló adatok egy rés
 	\end{subfigure}
 	\caption{Példa kimutatás a Keras által gyűjtött statisztikákról}
 \end{figure}
-%TODO Nincs Befejezve

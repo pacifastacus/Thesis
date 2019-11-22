@@ -88,7 +88,7 @@ Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform f
 Változatos megoldások születnek a mély tanulás gyorsítására a hardvergyártók részéről. Kezdetben a nagy teljesítményű általános célú grafikus processzorokat (GPGPU) alkalmazták szinte kizárólag a neurális hálózatokkal kapcsolatos számításokhoz, mert ezek az architektúrák kifejezetten hatékonyan tudnak vektor és mátrixműveleteket végezni --~tulajdonképpen pont erre tervezték őket. Azonban ahogy elkezdett terjedni a mély tanulás olyan területeken is, ahol számít az alacsony hűtésigény, kiegyensúlyozott energiafogyasztás vagy a hordozhatóság, új architektúrák is kezdtek megjelenni. A következőkben bemutatok pár --~a mély tanulásban használt~-- hardvert és két szoftveres környezetet, melyek jól körvonalazzák, milyen irányba fog fejlődni a gépi tanulás technológiája.
 
 \subsection{Nvidia által fejlesztett gyorsítókártyák}
-Abban az időben mikor a mély tanulás bekerült a köztudatba a grafikus processzor gyártóknak olyan megoldásaik voltak, amikkel általános számítási feladatok programozását tette lehetővé a termékeiken. Ilyen az Nvidia CUDA (\emph{Compute Unified Device Architecture}) is, ami egy párhuzamos számítási platform és alkalmazásprogramozási interfész modell. Maga a platform egy olyan szoftverréteg, mely közvetlen hozzáférést enged a GPU utasításkészletéhez.\cite{wiki:cuda} Az API pedig olyan programozási eszközöket nyújt, amivel hatékonyan lehet CUDA képes GPU-n futó programot írni. A cég által közzé tett dokumentációk alapján nagy vonalakban bemutatnám a neurális hálózatok fejlesztéshez használható eszközeit\cite{web:cudnn}
+Abban az időben mikor a mély tanulás bekerült a köztudatba a grafikus processzor gyártóknak olyan megoldásaik voltak, amikkel általános számítási feladatok programozását tette lehetővé a termékeiken. Ilyen az Nvidia CUDA (\emph{Compute Unified Device Architecture}) is, ami egy párhuzamos számítási platform és alkalmazásprogramozási interfész. Maga a platform egy olyan szoftverréteg, mely közvetlen hozzáférést enged a GPU utasításkészletéhez.\cite{wiki:cuda} Az API pedig olyan programozási eszközöket nyújt, amivel hatékonyan lehet CUDA képes GPU-n futó programot írni. A cég által közzé tett dokumentációk alapján nagy vonalakban bemutatnám a neurális hálózatok fejlesztéshez használható eszközeit\cite{web:cudnn}
 Ahhoz, hogy neurális hálózatokat futtassunk CUDA platform szükséges a CuDNN (\emph{CUDA Deep Neural Network Library}) könyvtárcsomag, mely a nélkülözhetetlen elemi függvényeket implementálja:
 \begin{enumerate}
 	\item Konvolúció
@@ -101,7 +101,7 @@ A CuDNN használatakor szükséges egy kezelőt (handler) inicializálni a \verb
 
 A vállalat GPU-jainak magjai közül CUDA magoknak hívja azokat a speciális számítási egységeket, melyek egyedileg programozhatóak a platformon (tehát CUDA alatt nem utilizálható az összes mag). A mai legmodernebb gyorsítókártyákat az NVIDIA Turingnak nevezett architektúrájú processzorokkal szereli fel.
 %Itt szeretnék bemutatni két felhasználási területük szempontjából eltérő kártyát:
-Több fejlesztési irányt követnek a gyártók: Standard asztali és mobil grafikus processzorok, High-end asztali GPU (Nvidiánál: Quadro és TitanRTX\cite{spec:titan-rtx}), illetve szerver oldali GPU (Tesla\cite{spec:tesla-t4})
+Több fejlesztési irányt követnek a gyártók: Standard asztali és mobil grafikus processzorok, High-end asztali GPU (Nvidiánál: Quadro és TitanRTX\cite{spec:titan-rtx}), szerver oldali GPU (Tesla\cite{spec:tesla-t4}), valamint kifejezetten HPC-re szánt GPU () 
 \paragraph{TITAN RTX}
 %Turing microarchitecture (TU102)
 %24~GB GDDR6 @ 1750~MHz
@@ -128,7 +128,19 @@ Igen nagy teljesítményű grafikus kártya, mely a cég \emph{turing} mikroarch
 % 350~W felvett teljesítmény
 % TDP: 70~W
 Ezt a grafikus kártyát kifejezetten adatközpontok komponenseként szánták, ezért nem is szolgáltat videó jelet. Számítási teljesítményes is bizonyos szempontból szerényebb a TITAN RTX-nél. Szintén turing architektúrájú TU104 processzora 2560~CUDA magot tartalmaz. A szerényebb felszereltségnek ugyancsak az adatközponti felhasználása miatt van jelentőssége, hogy így kisebb áramfelvétel és hőleadás mellett tudjon üzemelni -- 350~W ajánlott leadási teljesítmény és összehasonlításképp a TITAN RTX \emph{Thermal Design Pointja} 280~W, míg ennek a kártyának csupán 70~W. Egyszeres pontosságú lebegópontos műveleteket alkalmazó számítások elméleti sebessége 8,141~TFLOP/s, viszont a félszeres pontosságnál nyolcszor gyorsabb, azaz ekkor 65,13~TFLOP/s az elméleti sebessége. Ebből látszik, hogy ez a kártya kifejezetten mély tanuláshoz és olyan alkalmazásokhoz lett optimalizálva, ahol félszeres pontosságú lebegőpontos számításokat kell végezni túlnyomó részt. A teljesség kedvéért megemlítem, hogy a kártya 16~GB szintén GDDR6 típusú memóriával lett felszerelve, melynek sávszélessége 320~GB/s (256~bites buszszélesség).
-%TODO konzultálj
+
+\paragraph{Tesla V100}
+%v100 GPU NVlink kártya
+% 16~vagy 32~GB HBM2 @ 1750~
+% sávszélesség 900~GB/s (4096bites busz)
+%640 tenzor mag
+%5120 CUDA mag @ 1455~MHz 
+% PCIe 32~GB/s
+%14~TFLOP/s (FP32)
+%NVLink 300~GB/s
+%15,7~TFLOP/s (FP32)
+A Tesla V100 a T4 elődje. Ennél a kártyánál a minél nagyobb teljesítmény elérésére törekedtek. HBM2 memóriamodulokkal szerelték 16 és 32~GB kapacitással.A memória sávszélesssége 900~GB/s 4096~bites adatbuszon. 5120~CUDA magot tartalmazz a Volta architektúrájú GPU, melyet a kártyára szereltek. A processzor maximálisan 1455~MHz órajel mellett üzemel. Kétféle kártyakialakítással árulják: PCI express interfésszel ellátott kártya az adatárházak számára (32~GB/s sávszélesség a kártya és az alaplap között), és a cég saját fejlesztésű \emph{NVLink} csatolófelülettel szerelt kártya HPC-hez. Utóbbi interfész sávszélessége 300~GB/s. A két kártya között jelentős eltérés a számítási kapacitás tekintetében, ugyanis míg a PCIe kártya 14~TFLOP/s számítási kapacitást nyújt, az NVLink változat teljesítménye 15,7~TFLOP/s egyszeres pontosságú lebegőpontos számításoknál.
+
 
 \subsection{Intel grafikus processzorok}
 Az Intel nagyon CPU-ját integrált grafikus processzorral szereli, szinte csak a munkaállomásokra szánt Xeon család processzorai nem tartalmaznak GPU-t (kivétel a Xeon E3 széria).\cite{wiki:listOfIGPU} Az Intel --~akárcsak a többi nagy hardvergyártó~-- ki akarja venni a részét a deep learning technológiák  fejlesztésében és olyan szoftvereket fejlesztett ki --~új architektúrák mellett~--, melyekkel mély tanulásra hasznosítható a szinte mindenütt jelenlévő GPU-ik számítási kapacitása. Ezek közül a legfontosabb az OpenCL alapú \emph{clDNN} programkönyvtár, mely lehetőség ad, hogy az cég processzoraiba integrált grafikus processzorokat mély tanulásra használhassuk. A másik a korábban bemutatott nGraph, mely több másik architektúra mellett Intel GPU-kat is képes kezelni.
@@ -152,7 +164,7 @@ A Myriad X kifejlesztésén túlmenően a vállalat tervezett egy gyorsítókár
 Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel használható, többek között Raspberry Pi-vel is. Meghajtására az Intel OpenVINO eszközkészlete használható, melyet gépi látáson alapuló alkalmazások fejlesztésére készített a vállalat. Lehetőség van egy platformon több NCS2 modul együttes használatára, így egyszerűen növelhető a rendszer teljesítménye.
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.5\linewidth]{fig/NCS2-specs}\\
+	\includegraphics[width=0.3\linewidth]{fig/NCS2-specs}\\
 	\footnotesize forrás:https://software.intel.com/en-us/neural-compute-stick
 	\caption{Neural Compute Stick 2 gyorsító} 
 	\label{fig:ncs2-specs}
@@ -326,8 +338,8 @@ Az alkalmazásfejlesztés az ilyen rendszerchipekkel szerelt kártyákra egyedi 
 %Low-level programmability: NNP-T kernel development toolchain w/tensor compiler
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\linewidth]{nnp-t_softwares}
-	\caption[Szoftverek]{A fejlesztésnél használható szoftveregyüttes}
+	\includegraphics[width=0.5\linewidth]{nnp-t_softwares}
+	\caption[Szoftverek]{Fejlesztéshez használható szoftveregyüttes}
 	\label{fig:nnp-tSwStack}
 \end{figure}
 
