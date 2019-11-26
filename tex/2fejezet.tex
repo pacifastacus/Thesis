@@ -4,8 +4,56 @@
 A mély tanulás, konkrétabban a mesterséges neurális hálózatok gyors fejlődősét és részben népszerűségét a hozzá készített programozási keretrendszereknek köszönheti, melyek java szabad hozzáférésű. Ezek a keretrendszerek arra hivatottak, hogy támogassák a neurális hálózatok fejlesztését új programozási módszertant adva. Már létező programozási nyelvekre épülnek, leginkább python-ra. Ezekben a keretrendszerekben egyszerűen implementálhatunk neurális hálózatokat úgy, hogy egyfajta nyelvi eszközkészletet adnak neurális hálózatok definiálására.
 
 \section{TensorFlow}
+A Google mély tanulással kapcsolatos projektjeihez saját eszközöket fejleszt ki. Ilyen a TensorFlow (továbbiakban: TF) keretrendszer is, mely elsősorban mély tanuláshoz lett készítve, de elég flexibilis ahhoz, hogy egyéb numerikus számítást programozzunk általa. Több hardver típust is támogat, és képes elosztott számítás végrehajtására is -- ezalatt értem a többprocesszoros rendszereken és a számítógép-füzéreken történő futtatást. A TF az \emph{adatfolyam programozási} paradigmát valósítja meg. Ez a programozási modell jól illeszkedik a párhuzamos rendszerekhez. Eszközei \emph{adatfolyam gráfok} implementálását teszik lehetővé, amik a TF-ben távolról hasonlítanak a neurális hálózatok gráfjaira. Ezen felül leegyszerűsíti többdimenziós tömbök (\emph{tenzorok}) kezelését. Több programozási nyelvhez is biztosított API, így eszközei hívhatóak Python, JavaScript, C++ és Java kódokból, bár a dokumentáció felhívja a figyelmet, hogy a Python API szolgáltatja a legteljesebb eszközkészletet és tekinthető a legstabilabbnak.\cite{web:tfAPI} Jelenleg két, egymással részben kompatibilis stabil verziója van a TF-nak. A Google részletes dokumentációt biztosít a keretrendszerhez,\cite{web:tfGuide} illetve első megjelenésekor kiadott fehér könyv tervezési oldalról mutatja be a TensorFlow-t.\cite{tensorflow2015-whitepaper}
 
-%TODO Nincs Befejezve
+\begin{figure}[h]
+	\begin{subfigure}{0.7\textwidth}
+		\begin{lstlisting}[language=Python]
+		import tensorflow as tf
+		b = tf.Variable(tf.zeros([100]))
+		W = tf.Variable(tf.random_uniform([784,100],-1,1))
+		x = tf.placeholder(name="x")
+		relu = tf.nn.relu(tf.matmul(W, x) + b)
+		C = [...]
+		s = tf.Session()
+		for step in xrange(0, 10):
+		input = ...construct 100-D input array...
+		result = s.run(C, feed_dict={x: input})
+		\end{lstlisting}\label{lst:TF}
+		\caption{TensorFlow kódrészlet minta}
+	\end{subfigure}
+	\begin{subfigure}{0.25\textwidth}
+		\centering
+		\includegraphics[width=0.9\columnwidth]{fig/TF_CompGraph}
+		\caption{A kódban definiált számítási gráf}
+		\label{fig:tfcompgraph}
+	\end{subfigure}
+	\caption{Számítási gráfok TensorFlowban}
+\end{figure}
+
+TensorFlowban a műveletek végrehajtásához műveleti csomópontokat kell definiálni, melyek egy-egy műveletet --~melyek a \verb|Operation| osztály példányai~-- valósítanak meg a számítási gráfban. Egy ilyen csomópontnak több bemenő, illetve kijövő éle lehet, melyek az átadott részszámításokat szimbolizálják --~a változók általánosan véve tenzorok a keretrendszeren belül. A \emph{Session} egységbe zárja a számításokat --~másként fogalmazva az \verb|Operation| és a \verb|Tensor| osztályok példányait~--, így a művelteket nem a gráfban implementációjában hajtódnak végre. Tehát a vezérlés külön van választva a program állapotától és a felhasználó az előbbit képes programozni. A TensorFlow új verziójában ez a megközelítés el lett rejtve, így például a \verb|outputs = session.run(f(placeholder), feed_dict={placeholder: input})| kifejezés helyett a sokkal rövidebb \verb|outputs = f(input)| használatos.
+
+Több~processzoros rendszeren az egyes számításokat úgy oszthatjuk ki az eszközök között, hogy a megfelelő csomópontokat a célhardverhez társítjuk.
+A kliens --~az alkalmazás, melyben a számítási-gráf definiálva lett~-- megszorításokat tehet a kiszolgálónak (dokumentációban:\emph{master}), hogy adott csomópontot --~vagy egy komplex munkafolyamatot~-- az eszközök mely csoportján lehet futtatni. Ezeket a megkötéseket a \verb|tf.device()| függvény paramétereként adhatjuk meg, és a megfelelő erőforrás-kezelővel tér vissza. A megkötések megadásának általános formája:\\
+\verb|/job:<JOB_NAME>/task:<TASK_INDEX>/device:<DEVICE_TYPE>:<DEVICE_INDEX>|
+ahol,
+\begin{description}
+	\item[JOB\_NAME] egy betűvel kezdődő alfanumerikus karaktersorozat,
+	\item[DEVICE\_TYPE] az eszköz típusa (például GPU vagy CPU),
+	\item[TASK\_INDEX] egy nemnegatív egész szám, ami a <JOB\_NAME> egy feladatának sorszáma,
+	\item[DEVICE\_INDEX] egy nemnegatív szám, ami több hasonló típusú eszköz esetén a megfelelő eszköz sorszáma.
+\end{description}
+Példaképpen a képbetöltést és mátrix szorzat számítást az alábbi módon tudjuk szétosztani az alaplapi és a grafikus processzor között:\cite{github:TF1-guide_distribution}
+\begin{lstlisting}[language=Python]
+with tf.device("/device:CPU:0"):
+    img = tf.decode_jpeg(tf.read_file("img.jpg"))
+
+with tf.device("/device:GPU:0"):
+    result = tf.matmul(weights, img)
+\end{lstlisting}
+
+A TensorFlow tehát egy nagyon rugalmas és jól skálázható keretrendszer, azonban a programozóra hárítja a neurális hálózat rétegeinek pontos implementációját, továbbá párhuzamos rendszerek esetén a számítási feladatok szétosztását. Születtek ezért olyan eszközök, melyek a TF ,,előtétjeként'' igyekeznek megszabadítani a felhasználót a hosszadalmas és aprólékos fejlesztéstől.
+
 \section{Keras}
 A Keras egy python nyelven írt programkönyvtár, vagy ahogy önmagát hívja ''magas szintű neurális hálózat API''\cite{web:Keras}. Fejlesztésébe François Chollet kezdett bele. Érdekessége, hogy más olyan keretrendszerekkel együttesen használható, amelyek a Keras-hoz hasonlóan magas absztrakciós szinten biztosítják a hálózatok implementálását, mint például a TensorFlow.
 %A Keras-ról szerzett tudásom javát Chollet könyvéből és a keretrendszer dokumentációjából szereztem.\cite{Chollet}\cite{web:Keras}.
@@ -32,9 +80,7 @@ network.add(layers.Dense(15, activation='relu', input_shape=(784,)))
 network.add(layers.Dense(10, activation='softmax'))
 \end{lstlisting}\label{lst:defLayers}
 \end{minipage}
-Ezen lista 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz.Keras-ban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy sűrűn kapcsolt réteget implementál. 
-%Dense = full-connected layer
-%TODO sürün kapcsolt réteg definíciója
+Ezen lista 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz.Keras-ban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy a szomszéos rétegekkel teljesen összekapcsolt réteget implementál --~ellenpéldaként a konvolúciós rétegek nem teljesen összekapcsoltak a szomszédos rétegekkel.
 A réteg bemenetként $28 *28 = 784$ elemű vektorokból álló mátrixot tud fogadni, másik dimenziója nem meghatározott. Ez a kötegelt adatfeldolgozás szempontjából fontos, tehát a bemeneti vektorok folyamát egyik dimenziójában nem meghatározott méretű tenzorral definiáljuk. A réteg kimenete egy 32 dimenziós vektor. A következő rétegnél nem adtuk meg a bemenet méretét, a keretrendszerben ez implicit módon rendelődik a réteghez. 
 
 Mindkét réteghez tartozik egy \emph{activation} paraméter, mely string típus kell legyen, és a réteg neuronjaihoz tartozó aktivációs függvényt adja meg. A példában a \verb|'relu'| és \verb|'softmax'| string a \ref{sec:fuggvenyek-algoritmusok} fejezet \eqref{eq:relu} és \eqref{eq:softmax} függvényére utal, azaz ezen bemeneti paraméterek esetén olyan \verb|Dense| objektum jön létre, mely ilyen aktivációs függvényekkel rendelkező neuron réteget valósít meg.

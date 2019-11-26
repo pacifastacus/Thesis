@@ -11,7 +11,7 @@ A következő alfejezetekben szeretnék bemutatni olyan szoftvereket és hardver
 %TODO konzultálj
 
 \section{nGraph}
-Az \ref{sect:hybridDL}~alfejezetben említett hibrid számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. A most leírtak alapját az nGraph hivatalos dokumentációja adja\cite{web:ngraph_intro}.
+Az \ref{sect:hybridDL}~alfejezetben említett hibrid számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. Az nGraph hivatalos dokumentációja részletesen leírja, hogy a fejlesztők milyen problémák megoldására tervezték ezt a szoftvert.\cite{web:ngraph_intro}.
 
 Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez.
 Legszembetűnőbb tulajdonsága, hogy képes többféle hardver architektúrán futtatni és beépíthető számos keretrendszerbe.
@@ -43,7 +43,7 @@ Az nGraph dokumentációjában áll egy példa arra vonatkozóan, hogyan lehet, 
 \end{figure}
 \footnotetext{forrás: \cite{web:ngraph_intro}}
 A fenti ábra bemutatja, hogyan egyszerűsíthetünk az $A$,$B$ és $C$ tenzorokat feldolgozó, $ (A+B)*C $ tenzorműveletet végrehajtó számítási gráfon.
-Fordítási időben megállapítható, hogy $B$ egy skalár konstans, így a \emph{konstans összehajtásnak} nevezett optimalizálás elvégezhető, és a 2 dimenziós vektorrá való kiterjesztés művelete elhagyható (helyette inkább közvetlenül létrehozunk egy $2\times2$ tenzort).
+Fordítási időben megállapítható, hogy $B$ egy skalár konstans, így a \emph{konstans összehajtásnak}\cite{wiki:constfold} nevezett optimalizálás elvégezhető, és a 2 dimenziós vektorrá való kiterjesztés művelete elhagyható (helyette inkább közvetlenül létrehozunk egy $2\times2$ tenzort).
 Ebben a példában $B=0$ skalár volt, így a belőle létrejött tenzor egy nullmátrix, így az semleges a kifejezés kiértékelésének szempontjából.
 \emph{Algebrai egyszerűsítést} végezve az $ (A+0)*C $ leegyszerűsíthető az $A*C$ kifejezésre, így összesen két csúccsal csökkentettük a gráfunkat.
 Ez az optimalizáció tehát a számítási gráf szintjén lett elvégezve.
@@ -78,7 +78,7 @@ Ez a szám a processzor architektúrák számán (h), adattípusokon (t), művel
 	\label{table:kernels}
 \end{table}
 
-Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnote{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő algoritmusokat tudjunk hatékonyan programozni}, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{github:PlaidML}\cite{web:PlaidML}
+Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnote{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő algoritmusokat tudjunk hatékonyan programozni\cite{wiki:plaidml}}, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{github:PlaidML}\cite{web:PlaidML}
 
 Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform független IR-rel igyekszik orvolsoni a skálázható backend-el kapcsolatos kihívást. A PlaidML ezt megtámogatja azzal, hogy képes az IR-ből származó gráfokból LLVM, OpenCL, OpenGL, CUDA és Metal kódot generálni melyek a megfelelő hardveren futtathatóak. Így egy magas szintű keretrendszerben írt neurális háló lefordul Intel és AMD processzrokon valamint grafikus processzorokon, az nVidia processzorain, továbbá az Apple cég által feljelsztett eszközökön. Az nGraph gráf szintű optimalizációját ráadásul kiegészíti automatikusan a PlaidML alacsonyabb szinten, ezzel teljesítmény növekedést érve el.
 
@@ -298,7 +298,7 @@ Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méret
 
 \section{Új gyorsítók: Intel Nervana Neural Network Processor}
 
-Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  rendszerchipeket, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I). Mint nevük is mutatja ezek kifejezetten mély tanulás gyorsításra lettek fejlesztve és úgy tervezték őket, hogy jól skálázható rendszert alkossanak. Ezeket a hardvereket a konferencián elmondottak alapján mutatnám be.\cite{yt:nnpt}\cite{yt:nnpi} Ebben az alfejezetben szereplő ábrák a konferencián levetített fóliákból származnak.\cite{yang-nnpt}\cite{Wechsler-nnpi}
+Az Intel idén augusztusban mutatta be a Hot Chips konferencián kifejezetten mély tanulásra Spring Crest és Spring Hill kódnevek alatt fejlesztett  rendszerchipeket, a Neural Network Processor for Training-et (NNP-T) és a Neural Network Processor for Inference-et (NNP-I)\cite{web:IntelNews2019}. Mint nevük is mutatja ezek kifejezetten mély tanulás gyorsításra lettek fejlesztve és úgy tervezték őket, hogy jól skálázható rendszert alkossanak. Ezeket a hardvereket a konferencián elmondottak alapján mutatnám be.\cite{yt:nnpt}\cite{yt:nnpi} Ebben az alfejezetben szereplő ábrák a konferencián levetített fóliákból származnak.\cite{yang-nnpt}\cite{Wechsler-nnpi}
 
 \subsection[NNP-T]{Neural Network Processor for Training}
 Az NNP-T egy egylapkás rendszer vagy rendszerchip, melynek fejlesztésénél fontos szempont volt az egyensúly a számítási teljesítmény, a perifériák közötti kommunikáció  sebessége és memória használat között. Ezt támogatja 

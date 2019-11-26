@@ -5,7 +5,7 @@
 
 \section{A neurális hálózatok elmélete}
 \label{sect:neuralNetworkTheory}
-Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}
+Olyan számítási modellel, amelynek alapját az idegrendszer hálózata adja először  Warren McCulloch és Walter Pitts 1943-ban foglalkozott az ,,A Logical Calculus of the Ideas Immanent in Nervous Activity'' című publikációjukban. Később Donald Hebb tanulással kapcsolatos megfigyeléseivel elindultak a mesterséges neurális hálókkal kapcsolatos kísérletezések.\cite{neural2006}\cite{nielsen2015}
 Kiderült, hogy ezek a struktúrák kiválóan alkalmasak osztályozási és regresszió számítási problémák megoldására, és a mai gépi tanulással kapcsolatos fejlesztések középpontjába került.
 
 A mesterséges neurális hálózatok egy viszonylag egyszerű modellen alapulnak. Minden neuron a hozzá kapcsolódó neuronok ingereinek összessége alapján ingerli a többi neuront melyekhez ő kapcsolódik, ekképpen az ingerület egy irányba halad a kapcsolatok mentén. Hogy a hálózat áttekinthető legyen, rendezzük a neuronokat rétegekbe úgy, hogy egy réteg neuronjai az ingerületet a közvetlen felső réteg neuronjaitól kapja, és a válasz ingert a közvetlenül alatta lévő réteg neuronjainak továbbítja.
@@ -50,7 +50,8 @@ Minden réteghez külön $W$ mátrixot és $\vec{b}$ vektort kell meghatározni.
 
 
 \section{Deep Learning}
-A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{chollet} szereztem, melynek a témához kapcsolódó részleteit alább bemutatom.
+%A Deep Learning-ről szerzett tudásom javát F. Cholett könyvéből\cite{chollet} szereztem, melynek a témához kapcsolódó részleteit alább bemutatom.
+Chollet könyvében részletesen kifejti mit is értünk \emph{Deep Learning} alatt, hogyan kapcsolódik a gépi tanulás fogalmához.\cite{chollet}
 
 A gépi taunlás egy teljesen más programozási paradigmát jelent, ugyanis a klasszikus programozás során a feldolgozandó adatokhoz a programozó adja az adat feldolgozásának szabályait, amit végig követve a gép kiszámítja a kívánt eredményt. Ezzel szemben a gépi tanulás során a programozó az adathoz  a kívánt eredményt adja meg, amiből a gép felállítja a megoldáshoz vezető szabályokat.%\cite{Chollet}
 
