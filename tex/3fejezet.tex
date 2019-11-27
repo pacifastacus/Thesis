@@ -5,7 +5,7 @@
 %hybrid computing
 A mai nagy teljesítményű párhuzamos számítási rendszerek igyekeznek kiaknázni az eltérő architektúrájú processzorok együttes alkalmazásában rejlő lehetőséget. Az ilyen heterogén rendszerek nemcsak nagyobb számítási kapacitással rendelkeznek, --~összehasonlítva az homogén rendszerek egy processzormagra eső számítási teljesítményét~-- de jelentősen kisebb az energiafelhasználásuk. Rengeteg területen alkalmaznak ilyen rendszereket, többek között elektrontomográfiás képrekonstrukciónál\cite{agulleiro2012} párhuzamos számítást igénylő tudományos alkalmazásokhoz\cite{meredith2011} és az ún. \emph{smart manufacturing} gyártástechnológia esetén.\cite{li2019}
 
-A párhuzamos adatfeldolgozás miatt ezek a rendszerek elsősorban grafikus processzor architektúrákat --~kiváltképpen \emph{általános célú grafikus processzorokat} (GPGPU)~-- alkalmaznak hagyományos CPU-k mellett.\footnote{Hibrid számítási rendszereknél előfordul még az FPGA-k és a DSP-k használata is, azonban szakdolgozatomban erre nem fogok kitérni.}Sok olyan rendszer épülhetett, ahol pár általános célú processzor mellett több GPGPU működött, azonban a legtöbb ilyen rendszer esetében a CPU-k pusztán az a az operációs rendszer futtatásában és számítási feladatok szétosztásában vett részt. Mély tanulás esetén előfordulhatnak olyan feladatok, amiket több CPU magra lehetne bízni.
+A párhuzamos adatfeldolgozás miatt ezek a rendszerek elsősorban grafikus processzor architektúrákat --~konkrétan \emph{általános célú grafikus processzorokat} (GPGPU)~-- alkalmaznak hagyományos CPU-k mellett.\footnote{Hibrid számítási rendszereknél előfordul még az FPGA-k és a DSP-k használata is.} Sok olyan rendszer épült korábban, ahol pár általános célú processzor mellett több GPGPU működött, azonban a legtöbb ilyen rendszer esetében a CPU-k pusztán az operációs rendszer futtatásában és számítási feladatok szétosztásában vett részt. Mély tanulás esetén előfordulhatnak olyan feladatok, amiket több CPU magra lehetne bízni.
 
 A következő alfejezetekben szeretnék bemutatni olyan szoftvereket és hardvereket, melyek lehetséges építőkövei egy ilyen mély tanulásra használható hibrid számítási rendszernek.
 %TODO konzultálj
@@ -13,7 +13,7 @@ A következő alfejezetekben szeretnék bemutatni olyan szoftvereket és hardver
 \section{nGraph}
 Az \ref{sect:hybridDL}~alfejezetben említett hibrid számítási rendszereken a neurális hálózatok működtetése nehézkes feladat. Szükséges a neurális hálózatból származtatható számítási gráf optimalizálása a különböző processzor architektúrákra, hogy képesek legyünk kihasználni a több architektúra adta sebességnövekedést. Többek között erre a célra az Intel belekezdett az nGraph projekt fejlesztésébe. Az nGraph hivatalos dokumentációja részletesen leírja, hogy a fejlesztők milyen problémák megoldására tervezték ezt a szoftvert.\cite{web:ngraph_intro}.
 
-Az nGraph az Intel\registeredlogo által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez.
+Az nGraph az Intel által fejlesztett programkönyvtár és egy futtatási környezet/fordító készlet melyet mély tanuló projektekhez terveztek.
 Legszembetűnőbb tulajdonsága, hogy képes többféle hardver architektúrán futtatni és beépíthető számos keretrendszerbe.
 Ezek azok a jellemzők, amiket kerestünk témavezetőmmel, hogy mély tanulást tudjunk végeztetni hatékonyan a \emph{HuSSar-on}. 
 Ezen túlmenően a jövőbeli fejlesztések az iparban egyre jelentősebben igényelik, hogy a modern MI rendszerek skálázhatóak legyenek, mert egyrészt a neurális hálók egyre komplexebbé válnak, másrészt az általuk feldolgozott adatok mennyisége is rohamosan növekszik. Jelenleg két bevett gyakorlat van a mély tanulás felgyorsítására:
@@ -35,14 +35,13 @@ Azonban a kernel könyvtáraknak három fő problémája van:
 Az nGraph fordító megoldás az első két problémára, és a \emph{PlaidML}-el ötvözve kiküszöbölhető a harmadik probléma.
 \subsection{Gráf szintű optimalizálás}
 Az nGraph dokumentációjában áll egy példa arra vonatkozóan, hogyan lehet, hogy egy mély tanulási keretrendszer integrálva egy {kernel könyvtárral} a számításokat optimálisan végzi, mégis a számítási gráf a csúcsait alkotó műveletek szempontjából mégsem optimális.
-\begin{figure}[!ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\textwidth]{kernel-problem-1.png}
-	\caption{két optimalizálás módszer: konstans összehajtás és algebrai egyszerűsítés a gráfon. \protect \footnotemark}
+	\caption{két optimalizálás módszer: konstans összehajtás és algebrai egyszerűsítés a gráfon. \footnotesize forrás: \cite{web:ngraph_intro}}
 	\label{fig:grafoptimalizalas}
 \end{figure}
-\footnotetext{forrás: \cite{web:ngraph_intro}}
-A fenti ábra bemutatja, hogyan egyszerűsíthetünk az $A$,$B$ és $C$ tenzorokat feldolgozó, $ (A+B)*C $ tenzorműveletet végrehajtó számítási gráfon.
+A \ref{fig:grafoptimalizalas}~ábra bemutatja, hogyan egyszerűsíthetünk az $A$,$B$ és $C$ tenzorokat feldolgozó, $ (A+B)*C $ tenzorműveletet végrehajtó számítási gráfon.
 Fordítási időben megállapítható, hogy $B$ egy skalár konstans, így a \emph{konstans összehajtásnak}\cite{wiki:constfold} nevezett optimalizálás elvégezhető, és a 2 dimenziós vektorrá való kiterjesztés művelete elhagyható (helyette inkább közvetlenül létrehozunk egy $2\times2$ tenzort).
 Ebben a példában $B=0$ skalár volt, így a belőle létrejött tenzor egy nullmátrix, így az semleges a kifejezés kiértékelésének szempontjából.
 \emph{Algebrai egyszerűsítést} végezve az $ (A+0)*C $ leegyszerűsíthető az $A*C$ kifejezésre, így összesen két csúccsal csökkentettük a gráfunkat.
@@ -88,7 +87,7 @@ Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform f
 Változatos megoldások születnek a mély tanulás gyorsítására a hardvergyártók részéről. Kezdetben a nagy teljesítményű általános célú grafikus processzorokat (GPGPU) alkalmazták szinte kizárólag a neurális hálózatokkal kapcsolatos számításokhoz, mert ezek az architektúrák kifejezetten hatékonyan tudnak vektor és mátrixműveleteket végezni --~tulajdonképpen pont erre tervezték őket. Azonban ahogy elkezdett terjedni a mély tanulás olyan területeken is, ahol számít az alacsony hűtésigény, kiegyensúlyozott energiafogyasztás vagy a hordozhatóság, új architektúrák is kezdtek megjelenni. A következőkben bemutatok pár --~a mély tanulásban használt~-- hardvert és két szoftveres környezetet, melyek jól körvonalazzák, milyen irányba fog fejlődni a gépi tanulás technológiája.
 
 \subsection{Nvidia által fejlesztett gyorsítókártyák}
-Abban az időben mikor a mély tanulás bekerült a köztudatba a grafikus processzor gyártóknak olyan megoldásaik voltak, amikkel általános számítási feladatok programozását tette lehetővé a termékeiken. Ilyen az Nvidia CUDA (\emph{Compute Unified Device Architecture}) is, ami egy párhuzamos számítási platform és alkalmazásprogramozási interfész. Maga a platform egy olyan szoftverréteg, mely közvetlen hozzáférést enged a GPU utasításkészletéhez.\cite{wiki:cuda} Az API pedig olyan programozási eszközöket nyújt, amivel hatékonyan lehet CUDA képes GPU-n futó programot írni. A cég által közzé tett dokumentációk alapján nagy vonalakban bemutatnám a neurális hálózatok fejlesztéshez használható eszközeit\cite{web:cudnn}
+Abban az időben mikor a mély tanulás bekerült a köztudatba a grafikus processzor gyártóknak olyan megoldásaik voltak, amikkel általános számítási feladatok programozását tette lehetővé a termékeiken. Ilyen az Nvidia CUDA (\emph{Compute Unified Device Architecture}) is, ami egy párhuzamos számítási platform és alkalmazásprogramozási interfész. Maga a platform egy olyan szoftverréteg, mely közvetlen hozzáférést enged a GPU utasításkészletéhez.\cite{wiki:cuda} Az API pedig olyan programozási eszközöket nyújt, amivel hatékonyan lehet CUDA képes GPU-n futó programot írni. A cég által közzé tett dokumentációk alapján nagy vonalakban bemutatnám a neurális hálózatok fejlesztéshez használható eszközeit.\cite{web:cudnn}
 Ahhoz, hogy neurális hálózatokat futtassunk CUDA platform szükséges a CuDNN (\emph{CUDA Deep Neural Network Library}) könyvtárcsomag, mely a nélkülözhetetlen elemi függvényeket implementálja:
 \begin{enumerate}
 	\item Konvolúció
@@ -101,7 +100,8 @@ A CuDNN használatakor szükséges egy kezelőt (handler) inicializálni a \verb
 
 A vállalat GPU-jainak magjai közül CUDA magoknak hívja azokat a speciális számítási egységeket, melyek egyedileg programozhatóak a platformon (tehát CUDA alatt nem utilizálható az összes mag). A mai legmodernebb gyorsítókártyákat az NVIDIA Turingnak nevezett architektúrájú processzorokkal szereli fel.
 %Itt szeretnék bemutatni két felhasználási területük szempontjából eltérő kártyát:
-Több fejlesztési irányt követnek a gyártók: Standard asztali és mobil grafikus processzorok, High-end asztali GPU (Nvidiánál: Quadro és TitanRTX\cite{spec:titan-rtx}), szerver oldali GPU (Tesla\cite{spec:tesla-t4}), valamint kifejezetten HPC-re szánt GPU () 
+Több fejlesztési irányt követnek a gyártók: Standard asztali és mobil grafikus processzorok, High-end asztali GPU (Nvidiánál: Quadro és TitanRTX\cite{spec:titan-rtx}), szerver oldali GPU (Tesla T4 \cite{spec:tesla-t4}), valamint kifejezetten HPC-re szánt GPU (Tesla v100\cite{spec:tesla-v100})
+
 \paragraph{TITAN RTX}
 %Turing microarchitecture (TU102)
 %24~GB GDDR6 @ 1750~MHz
@@ -138,18 +138,19 @@ Ezt a grafikus kártyát kifejezetten adatközpontok komponenseként szánták, 
 % PCIe 32~GB/s
 %14~TFLOP/s (FP32)
 %NVLink 300~GB/s
+%31,33~TFLOP/s (FP16)
 %15,7~TFLOP/s (FP32)
-A Tesla V100 a T4 elődje. Ennél a kártyánál a minél nagyobb teljesítmény elérésére törekedtek. HBM2 memóriamodulokkal szerelték 16 és 32~GB kapacitással.A memória sávszélesssége 900~GB/s 4096~bites adatbuszon. 5120~CUDA magot tartalmazz a Volta architektúrájú GPU, melyet a kártyára szereltek. A processzor maximálisan 1455~MHz órajel mellett üzemel. Kétféle kártyakialakítással árulják: PCI express interfésszel ellátott kártya az adatárházak számára (32~GB/s sávszélesség a kártya és az alaplap között), és a cég saját fejlesztésű \emph{NVLink} csatolófelülettel szerelt kártya HPC-hez. Utóbbi interfész sávszélessége 300~GB/s. A két kártya között jelentős eltérés a számítási kapacitás tekintetében, ugyanis míg a PCIe kártya 14~TFLOP/s számítási kapacitást nyújt, az NVLink változat teljesítménye 15,7~TFLOP/s egyszeres pontosságú lebegőpontos számításoknál.
+A Tesla V100 a T4 elődje. Ennél a kártyánál a minél nagyobb teljesítmény elérésére törekedtek. HBM2 memóriamodulokkal szerelték 16 és 32~GB kapacitással.A memória sávszélesssége 900~GB/s 4096~bites adatbuszon. 5120~CUDA magot tartalmazz a Volta architektúrájú GPU, melyet a kártyára szereltek. A processzor maximálisan 1455~MHz órajel mellett üzemel. Kétféle kártyakialakítással árulják: PCI express interfésszel ellátott kártya az adatárházak számára (32~GB/s sávszélesség a kártya és az alaplap között), és a cég saját fejlesztésű \emph{NVLink} csatolófelülettel szerelt kártya HPC-hez. Utóbbi interfész sávszélessége 300~GB/s. A két kártya között jelentős eltérés a számítási kapacitás tekintetében, ugyanis míg a PCIe kártya 14~TFLOP/s számítási kapacitást nyújt, az NVLink változat teljesítménye 31,33~TFLOP/s félszeres pontosságú lebegőpontos számításoknál. Ez noha kevesebb a T4 teljesítményénél, tenzorműveletek számításánál 125~TFLOP/s teljesítményt képes produkálni.\cite{v100-datasheet}
 
 
 \subsection{Intel grafikus processzorok}
-Az Intel nagyon CPU-ját integrált grafikus processzorral szereli, szinte csak a munkaállomásokra szánt Xeon család processzorai nem tartalmaznak GPU-t (kivétel a Xeon E3 széria).\cite{wiki:listOfIGPU} Az Intel --~akárcsak a többi nagy hardvergyártó~-- ki akarja venni a részét a deep learning technológiák  fejlesztésében és olyan szoftvereket fejlesztett ki --~új architektúrák mellett~--, melyekkel mély tanulásra hasznosítható a szinte mindenütt jelenlévő GPU-ik számítási kapacitása. Ezek közül a legfontosabb az OpenCL alapú \emph{clDNN} programkönyvtár, mely lehetőség ad, hogy az cég processzoraiba integrált grafikus processzorokat mély tanulásra használhassuk. A másik a korábban bemutatott nGraph, mely több másik architektúra mellett Intel GPU-kat is képes kezelni.
+Az Intel legtöbb CPU-ját integrált grafikus processzorral szereli, szinte csak a munkaállomásokra szánt Xeon család processzorai nem tartalmaznak GPU-t (kivétel a Xeon E3 széria).\cite{wiki:listOfIGPU} Az Intel --~akárcsak a többi nagy hardvergyártó~-- ki akarja venni a részét a deep learning technológiák  fejlesztésében és olyan szoftvereket fejlesztett ki --~új architektúrák mellett~--, melyekkel mély tanulásra hasznosítható a szinte mindenütt jelenlévő GPU-ik számítási kapacitása. Ezek közül a legfontosabb az OpenCL alapú \emph{clDNN} programkönyvtár, mely lehetőség ad, hogy az cég processzoraiba integrált grafikus processzorokat mély tanulásra használhassuk. A másik a korábban bemutatott nGraph, mely több másik architektúra mellett Intel GPU-kat is képes kezelni.
 
 \paragraph{Intel Xe grafikus processzorarchitektúra}
-Nem olyan rég az Intel bejelentette, hogy készül egy új grafikus processzor családot, az Xe szériát piacra dobni. Eltérően az eddig általuk készített GPU szériáktól az Xe lapkák diszkrét --~tehát nem CPU-ba integrált~-- grafikus processzorok lesznek. Előzetes bejelentés alapján 2020-ra kerül forgalomba, de jelenleg kevés információt ad közre a gyártó a processzorról és az azt tartalmazó videokártyáról.\cite{tyson-hexus} Ezekkel a chipekkel a vállalat a nagyvállalati felhasználókat célozza meg. Adatközpontok és szuperszámítógépek alkotórészének szánják, hangsúlyt fektetve a mesterséges neurális hálózatokban való felhasználásra. Tesztelés alatt ál a DG1 kódnévvel ellátott grafikus kártya.\cite{allan-techradar} 
+Nem olyan rég az Intel bejelentette, hogy készül egy új grafikus processzor családot, az Xe szériát piacra dobni. Eltérően az eddig általuk készített GPU szériáktól az Xe lapkák diszkrét --~tehát nem CPU-ba integrált~-- grafikus processzorok lesznek. Előzetes bejelentés alapján 2020-ra kerül forgalomba, de jelenleg kevés információt ad közre a gyártó a processzorról és az azt tartalmazó videokártyáról.\cite{tyson-hexus} Mindenesetre az már biztos, hogy elérkezett a tesztelés fázisához az első grafikus kártyája a cégnek, melyet DG1-nek neveztek el.\cite{allan-techradar} Ezekkel a chipekkel a vállalat a nagyvállalati felhasználókat célozza meg. Adatközpontok és szuperszámítógépek alkotórészének szánják, hangsúlyt fektetve a mesterséges neurális hálózatokban való felhasználásra.
 
 Dr. Cutress anandtech.com oldalon megjelent cikkében jobban részletezi, mi várható az Xe szériától.\cite{cutress-anandtech} Egyrészt az Intel az új architektúrával az összes olyan technológiai ágazatot le akarja fedni, melyek grafikus processzorokra alapoznak. Ezt úgy kivitelezi, hogy az Xe --~mely egy architektúrát takar~-- több mikro- és szub-architektúra alkotja.
-Hogy szuperszámítógépes környezetben is megállja a helyét ezek a chipek --~vagy a széria néhány darabja~-- kezelni tudja a dupla pontosságú lebegőpontos számításokat. A kifejezetten HPC rendszerekre szánt GPU kódneve \emph{Ponte Vecchio}
+Hogy szuperszámítógépes környezetben is megállja a helyét ezek a chipek --~vagy a széria néhány darabja~-- kezelni tudja a dupla pontosságú lebegőpontos számításokat. A kifejezetten HPC rendszerekre szánt GPU kódneve \emph{Ponte Vecchio}.
 
 Ezzel az új termékcsaláddal a vállalat komoly versenytársa lehet majd az Nvidia-nak, mert emellett kifejleszt a CUDA-hoz hasonló \emph{OneAPI} nevű programozási modellt, mellyel egységesen lehet számításokat végezni Intel CPU-in, GPU-in és FPGA-in.\cite{patrizio-networkworld}
 %TODO konzultálj
@@ -165,7 +166,7 @@ Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel haszná
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.3\linewidth]{fig/NCS2-specs}\\
-	\footnotesize forrás:https://software.intel.com/en-us/neural-compute-stick
+	\footnotesize forrás:software.intel.com/en-us/neural-compute-stick
 	\caption{Neural Compute Stick 2 gyorsító} 
 	\label{fig:ncs2-specs}
 \end{figure}
@@ -280,18 +281,18 @@ Az Intelhez hasonlóan a Google is tervezett célprocesszort és hozzá fejleszt
 \begin{figure*}[h]
 	\centering
 	\includegraphics[width=0.4\textwidth]{fig/penny-edge-tpu}\\
-	\footnotesize forrás: https://cloud.google.com/edge-tpu/
+	\footnotesize forrás:cloud.google.com/edge-tpu/
 	\caption{Edge TPU}
 	\label{fig:EdgeTPU}
 \end{figure*}
 \begin{figure*}[h]
 	\centering
 	\includegraphics[width=0.4\textwidth]{fig/Coral_USBAccelerator}\quad
-	\caption[Coral USB Accelerator]{Az Edge TPU-t építették az USB interfésszel ellátott Coral USB Accerlerator-ba.\cite{web:GoogleEdge}}
+	\caption[Coral USB Accelerator]{Az Edge TPU-t építették az USB interfésszel ellátott Coral USB Accerleratorba. \footnotesize forrás:\cite{web:GoogleEdge}}
 	\label{fig:coralusbaccelerator}
 \end{figure*}
 
-A Google a Tensor Processing Unit\texttrademark-ot, egy saját fejlesztésű alkalmazásspecifikus integrált áramkört használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezek lényegében mátrix műveletekre számítására fejlesztett processzorok CISC utasításkészlettel. Három generációt ért meg, az első még csak 8-bites egészeken tudott műveleteket végezni, azonban már a második generáció képes volt lebegőpontos számításokra is. A Tensor processing unit-okkal felszerelt gyorsítókártyákat a Google saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a konvolúció és az \ref{sect:neuralNetworkTheory} alfejezetben tárgyalt aktváló függvények alkalmazása a mátrix szorzáson túl.
+A Google a \emph{Tensor Processing Unitot}, egy saját fejlesztésű alkalmazásspecifikus integrált áramkört használ a neurális hálózatokkal kapcsolatos számítások optimalizálására. Ezek lényegében mátrix műveletekre számítására fejlesztett processzorok CISC utasításkészlettel. Három generációt ért meg, az első még csak 8-bites egészeken tudott műveleteket végezni, azonban már a második generáció képes volt lebegőpontos számításokra is. A Tensor processing unit-okkal felszerelt gyorsítókártyákat a Google saját adatközpontjaiban használja főként és elérhetővé teszi őket a \emph{Google Cloud Platform} nevű szolgáltatásán keresztül. Nevéből adódóan a kártya architektúrája lehetővé teszi, hogy  tenzorműveletek tudjanak hatékonyan végrehajtani, utasításkészletük kifejezetten támogatja a neurális hálózatokat. Ilyen művelet a konvolúció és az \ref{sect:neuralNetworkTheory} alfejezetben tárgyalt aktváló függvények alkalmazása a mátrix szorzáson túl.
 
 Az Edge TPU a cég szerverei által használt TPU-hoz viszonyítva kisebb méretben és energiafogyasztásban. Ugyan azt az igényt igyekszik kielégíteni, mint a korábban bemutatott Myriad X processzor. Azzal összehasonlítva viszont képes neurális hálózatok tanítására is korlátozott mértékben. Az Edge TPU részét képezi a Google Coral eszközkészletének, mellyel alternatívát nyújtanak a felhőalapú Cloud AI szolgáltatással szemben. A Coral különböző fajtájú hardvert nyújt a felhasználóknak, mindegyik központi eleme az Edge TPU. Az eszköz programozásához használható API-t az Edge TPU Python könyvtár (\verb|edgetpu| Python modul) valósítja meg, amely képes TensorFlow Lite-ban alkotott betanított neurális hálózatok futtatására. A könyvtár kulcsfontosságú interfészeit a következő osztályok képezik.Képosztályozási feladatokhoz a \verb|ClassificationEngine| használatos, vizuális objektumazonosításra a \verb|DetectionEngine|. Az \verb|ImprintingEngine| és \verb|SoftmaxRegression| az ún. \emph{transzfer tanuláshoz} alkalmazható, vagyis előre betanított hálózatok a feladatnak megfelelő újratanítását végezhetjük el vele.
 

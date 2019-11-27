@@ -80,8 +80,8 @@ network.add(layers.Dense(15, activation='relu', input_shape=(784,)))
 network.add(layers.Dense(10, activation='softmax'))
 \end{lstlisting}\label{lst:defLayers}
 \end{minipage}
-Ezen lista 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz.Keras-ban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy a szomszéos rétegekkel teljesen összekapcsolt réteget implementál --~ellenpéldaként a konvolúciós rétegek nem teljesen összekapcsoltak a szomszédos rétegekkel.
-A réteg bemenetként $28 *28 = 784$ elemű vektorokból álló mátrixot tud fogadni, másik dimenziója nem meghatározott. Ez a kötegelt adatfeldolgozás szempontjából fontos, tehát a bemeneti vektorok folyamát egyik dimenziójában nem meghatározott méretű tenzorral definiáljuk. A réteg kimenete egy 32 dimenziós vektor. A következő rétegnél nem adtuk meg a bemenet méretét, a keretrendszerben ez implicit módon rendelődik a réteghez. 
+A kód 4. sorában inicializáljuk a hálózatot, az utána következő sorokban új neuron rétegeket adunk a hálózathoz. Kerasban különböző előre definiált rétegkapcsolatok vannak. Itt a \verb|layers.Dense| osztály egy a szomszédos rétegekkel teljesen összekapcsolt réteget implementál --~azaz egy neuron az előző réteg összes neuronjához kapcsolódik.
+A réteg bemenetként $28 \times 28 = 784$ elemű vektorokból álló mátrixot tud fogadni, másik dimenziója nem meghatározott. Ez a kötegelt adatfeldolgozás szempontjából fontos, tehát a bemeneti vektorok folyamát egyik dimenziójában nem meghatározott méretű tenzorral definiáljuk. A réteg kimenete egy 15 dimenziós vektor. A következő réteg pedig 10 elemű tömböt állít el. Megfigyelhető, hogy nem adtuk meg a bemenet méretét, ugyanis a keretrendszerben ez implicit módon rendelődik a réteghez. 
 
 Mindkét réteghez tartozik egy \emph{activation} paraméter, mely string típus kell legyen, és a réteg neuronjaihoz tartozó aktivációs függvényt adja meg. A példában a \verb|'relu'| és \verb|'softmax'| string a \ref{sec:fuggvenyek-algoritmusok} fejezet \eqref{eq:relu} és \eqref{eq:softmax} függvényére utal, azaz ezen bemeneti paraméterek esetén olyan \verb|Dense| objektum jön létre, mely ilyen aktivációs függvényekkel rendelkező neuron réteget valósít meg.
 
@@ -103,7 +103,7 @@ history = network.fit(train_datas,
 \end{lstlisting}\label{lst:fitNetwork}
 \end{minipage}
 
-A \verb|train_datas| és \verb|train_labels| a tanítókészletet alkotó minták és azok címkéi, a várt kimeneti értékek. Ezek elemszáma kötelezően meg kell egyezzen. A \emph{batch\_size} paraméterrel, ami az egy \emph{epoch}-ban egyszerre feldolgozandó adatokat jelenti. A betanítás végén a \verb|network| egy \emph{betanított}, a célfeladat megoldására felhasználható neurális hálózat lesz. Alkalmazásához a \verb|predict()|metódus használatos,mely a paraméterként megadott bemeneti adatokhoz tartozó predikciókkal tér vissza.
+A \verb|train_datas| és \verb|train_labels| a tanítókészletet alkotó minták és azok címkéi, a várt kimeneti értékek (ezek elemszáma kötelezően meg kell egyezzen). A \emph{batch\_size} paraméter a \emph{mini batch-ok} méretét adja, ami az egy \emph{epoch}-ban egyszerre feldolgozandó adatokat jelenti. A betanítás végén a \verb|network| egy \emph{betanított}, a célfeladat megoldására felhasználható neurális hálózat lesz. Alkalmazásához a \verb|predict()|metódus használatos, mely a paraméterként megadott bemeneti adatokhoz tartozó predikciókkal tér vissza.
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[language=Python, caption=Az eszközre töltött hálózat futtatása az adatokon]
 	result = network.predict(datas)
