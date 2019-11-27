@@ -41,10 +41,10 @@ Az nGraph dokumentációjában áll egy példa arra vonatkozóan, hogyan lehet, 
 	\caption{két optimalizálás módszer: konstans összehajtás és algebrai egyszerűsítés a gráfon. \footnotesize forrás: \cite{web:ngraph_intro}}
 	\label{fig:grafoptimalizalas}
 \end{figure}
-A \ref{fig:grafoptimalizalas}~ábra bemutatja, hogyan egyszerűsíthetünk az $A$,$B$ és $C$ tenzorokat feldolgozó, $ (A+B)*C $ tenzorműveletet végrehajtó számítási gráfon.
+A \ref{fig:grafoptimalizalas}~ábra bemutatja, hogyan egyszerűsíthetünk az $A$,$B$ és $C$ tenzorokat feldolgozó, $ (A+B)\times C $ tenzorműveletet végrehajtó számítási gráfon.
 Fordítási időben megállapítható, hogy $B$ egy skalár konstans, így a \emph{konstans összehajtásnak}\cite{wiki:constfold} nevezett optimalizálás elvégezhető, és a 2 dimenziós vektorrá való kiterjesztés művelete elhagyható (helyette inkább közvetlenül létrehozunk egy $2\times2$ tenzort).
 Ebben a példában $B=0$ skalár volt, így a belőle létrejött tenzor egy nullmátrix, így az semleges a kifejezés kiértékelésének szempontjából.
-\emph{Algebrai egyszerűsítést} végezve az $ (A+0)*C $ leegyszerűsíthető az $A*C$ kifejezésre, így összesen két csúccsal csökkentettük a gráfunkat.
+\emph{Algebrai egyszerűsítést} végezve az $ (A+0)\times C $ leegyszerűsíthető az $A\times C$ kifejezésre, így összesen két csúccsal csökkentettük a gráfunkat.
 Ez az optimalizáció tehát a számítási gráf szintjén lett elvégezve.
 Így belátható, hogy a mély tanulási keretrendszerbe integrált kernel programkönyvtárak nem optimális futást végeznek, hiába a műveletek szintjén elért optimalizálás.
 
@@ -77,7 +77,7 @@ Ez a szám a processzor architektúrák számán (h), adattípusokon (t), művel
 	\label{table:kernels}
 \end{table}
 
-Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnote{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő algoritmusokat tudjunk hatékonyan programozni\cite{wiki:plaidml}}, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{github:PlaidML}\cite{web:PlaidML}
+Ezen probléma megoldásához jön képbe a PlaidML. Ez egy \emph{tenzor fordító}\footnote{Olyan fordító, melynek nyelve arra lett fejlesztve, hogy főleg tenzorműveleteket igénylő algoritmusokat tudjunk hatékonyan programozni\cite{wiki:plaidml}}, mely azt célozza, hogy képes legyen neurális hálózatokat tanítani és futtatni bármilyen típusú hardveren. Más szavakkal segíti a magas szintű keretrendszerek (Keras, ONNX, nGraph) integrálni olyan ezsközökkel, melyekhez nincs meg a szükséges támogatás vagy a meglévő szoftverkészlet hozzájuk szigorúan linceszelt.\cite{web:PlaidML}\cite{github:PlaidML}
 
 Az nGraph tehát integrálható a PlaidML-el. Elsősorban az nGraph a platform független IR-rel igyekszik orvolsoni a skálázható backend-el kapcsolatos kihívást. A PlaidML ezt megtámogatja azzal, hogy képes az IR-ből származó gráfokból LLVM, OpenCL, OpenGL, CUDA és Metal kódot generálni melyek a megfelelő hardveren futtathatóak. Így egy magas szintű keretrendszerben írt neurális háló lefordul Intel és AMD processzrokon valamint grafikus processzorokon, az nVidia processzorain, továbbá az Apple cég által feljelsztett eszközökön. Az nGraph gráf szintű optimalizációját ráadásul kiegészíti automatikusan a PlaidML alacsonyabb szinten, ezzel teljesítmény növekedést érve el.
 
@@ -159,15 +159,14 @@ Ezzel az új termékcsaláddal a vállalat komoly versenytársa lehet majd az Nv
 %Motiváció: Valós idejű alkalmazások esetén szükséges az offline számítás -> GPU - lehetséges, de erőforrás igényes(áram és hűtés) és nagy méretű 
 Ma az iparban mély tanulással működő modern alkalmazások nagy méretű és teljesítményű számítógépeket igényelnek. Erre az igényre válaszul felhő szolgáltatást nyújtó vállalatok külön platformot építettek ki. Az ilyen kliens-szerver architektúrájú gépi tanulás hatékony lehet, azonban a valós-idejű alkalmazásoknál és hordozható eszközökben történő felhasználásnál komoly hátrányt jelenthet a hálózati késleltetés. Hogy ilyen területeken is alkalmazható legyen a mély tanulás, hardvergyártók olyan kis energiafogyasztású \emph{alkalmazás-specifikus integrált áramkörök} fejlesztésére törekedtek, melyek képesek neurális hálózatokat hatékonyan futtatni. Ilyen az Intel által kifejlesztett Myriad X lapka is, melyet főleg \emph{gépi látáshoz} terveztek.
 
-Maga a Myriad egy Videójel feldolgozó processzor széria, melynek 3. generációja a Myriad X architektúrája kiegészült egy úgynevezett \emph{Neural Compute Engine-el}, mely a betanított hálózatok futtatását hivatott gyorsítani. Ezzel együtt a lapka 16 darab 128-bit VLIW processzormagok, ún. SHAVE magot és 2,5MB 400GB/s sávszélességű memóriát tartalmaz. Számításokat 8bites egészek és 16bites lebegőpontos váltózókon tud végezni.\footnote{forrás: https://www.movidius.com/myriadx} 
+Maga a Myriad egy Videójel feldolgozó processzor széria, melynek 3. generációja a Myriad X architektúrája kiegészült egy úgynevezett \emph{Neural Compute Engine-el}, mely a betanított hálózatok futtatását hivatott gyorsítani. Ezzel együtt a lapka 16 darab 128-bit VLIW processzormagok, ún. SHAVE magot és 2,5MB 400GB/s sávszélességű memóriát tartalmaz. Számításokat 8bites egészek és 16bites lebegőpontos váltózókon tud végezni.\footnote{A Myriad X specifikációi a www.movidius.com/myriadx oldalon szerepelnek} 
 
 A Myriad X kifejlesztésén túlmenően a vállalat tervezett egy gyorsítókártyát is ehhez a processzorhoz, melyet Neural Compute Stick (NCS) névvel forgalmaz. Az Intel kiadta a második verzióját az eszköznek  Neural Compute Stick 2 (NCS2) névvel és az első verziót nem forgalmazz már. Ezért a továbbiakban a leírtakat az NCS2-re kell érteni.
 Az eszköz USB 3.0 -ás interfésszel rendelkezik, így sok gazdagéppel használható, többek között Raspberry Pi-vel is. Meghajtására az Intel OpenVINO eszközkészlete használható, melyet gépi látáson alapuló alkalmazások fejlesztésére készített a vállalat. Lehetőség van egy platformon több NCS2 modul együttes használatára, így egyszerűen növelhető a rendszer teljesítménye.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.3\linewidth]{fig/NCS2-specs}\\
-	\footnotesize forrás:software.intel.com/en-us/neural-compute-stick
-	\caption{Neural Compute Stick 2 gyorsító} 
+	\caption{Neural Compute Stick 2 gyorsító \footnotesize forrás:software.intel.com/en-us/neural-compute-stick} 
 	\label{fig:ncs2-specs}
 \end{figure}
 
@@ -184,14 +183,14 @@ kamera szenzor adatainak valós idejű feldolgozását végzik. Képesek vagyunk
 \end{description}
 
 Az OpenVINO-val való munka folyamatának három fő lépése van:
-\begin{enumerate*}[label={}, font=\bfseries]
+\begin{enumerate*}[label={\arabic*)}, font=\bfseries]
 	\item Betanított Neurális hálózat beszerzése vagy implementálása;
 	\item a hálózat átkonvertálása a Model Optimizer-rel;
-	\item Inference Engine-re épülő program implementálása, mely beolvassa az átkonvertált állományokat és átadja a neurális hálózat modelljét a célhardvernek;
+	\item Inference Engine-re épülő program implementálása, mely beolvassa az átkonvertált állományokat és átadja a neurális hálózat modelljét a célhardvernek.
 \end{enumerate*}
 
 \subsubsection{Modell átkonvertálása}
-Mint már korábban említettem a platform különböző neurális hálózatok implementálására kifejlesztett keretrendszereket támogat. Ezek a keretrendszerek képesek a definiált és betanított hálózatokat valamilyen állomány formátumban elmenteni. Hogy ezeket az állományokat minden gyorsító eszközön egységesen legyen képes kezelni az \emph{Inference Engine} szükséges az állományokat átkonvertálni a \emph{Model Optimizer} segítségével. Ez egy Python-ban írt kereszt-platformos parancssoros alkalmazás, mely a beolvasott modell állományokban tárolt hálózatot elmenteni egy \emph{közbenső reprezentációvá}\footnote{Intermediate Representation (IR)}, melyre a továbbiakban \emph{IR-ként} fogok hivatkozni. Az átkonvertálás során a Model Optimizer analizálja a modellt\footnote{betanított, kvázi használatra kész neurális hálózat} és olyan korrekciókat hajt végre rajta, hogy optimális módon hajtódjon végre az egyes gyorsítókon. 
+Mint már korábban említettem a platform különböző neurális hálózatok implementálására kifejlesztett keretrendszereket támogat. Ezek a keretrendszerek képesek a definiált és betanított hálózatokat valamilyen állomány formátumban elmenteni. Hogy ezeket az állományokat minden gyorsító eszközön egységesen legyen képes kezelni az \emph{Inference Engine} szükséges az állományokat átkonvertálni a \emph{Model Optimizer} segítségével. Ez egy Python-ban írt kereszt-platformos parancssoros alkalmazás, mely a beolvasott modell állományokban tárolt hálózatot elmenteni egy \emph{közbenső reprezentációvá}\footnote{Intermediate Representation (IR)} vagy ahogy a dokumentáció említi IR. Az átkonvertálás során a Model Optimizer analizálja a modellt\footnote{betanított, kvázi használatra kész neurális hálózat} és olyan korrekciókat hajt végre rajta, hogy optimális módon hajtódjon végre az egyes gyorsítókon. 
 
 Egy TensorFlow-ban implementált neurális hálózat átkonvertáláshoz az alábbi lépéseket kell végrehajtani:
 \paragraph*{Model Optimizer konfigurációja}
@@ -312,7 +311,7 @@ A számításokat 24~darab tenzor processzormag végzi(TPC), és a vállalat sze
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{NNP-T_soc}
-	\caption[SoC]{Az NNP-T egylapkás rendszer (SoC) felépítése}
+	\caption[SoC]{Az NNP-T egylapkás rendszer (SoC) felépítése \footnotesize forrás:\cite{yang-nnpt}}
 	\label{fig:nnp-tsoc}
 \end{figure}
 
@@ -321,7 +320,7 @@ Egy TPC magon belül két darab mátrixszorzó tömb van, melyek egyenként 32$\
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{tensor-processing-cluster_TPC}
-	\caption[TPC]{Egy TPC felépítése}
+	\caption[TPC]{Egy TPC felépítése \footnotesize forrás:\cite{yang-nnpt}}
 	\label{fig:TPC}
 \end{figure}
 
@@ -340,7 +339,7 @@ Az alkalmazásfejlesztés az ilyen rendszerchipekkel szerelt kártyákra egyedi 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\linewidth]{nnp-t_softwares}
-	\caption[Szoftverek]{Fejlesztéshez használható szoftveregyüttes}
+	\caption[Szoftverek]{Fejlesztéshez használható szoftveregyüttes \footnotesize forrás:\cite{yang-nnpt}}
 	\label{fig:nnp-tSwStack}
 \end{figure}
 
@@ -369,7 +368,7 @@ Az ICE magok mellett két Intel IA Core processzormag is részét képezi a rend
 		\caption{Memória menedzsment}
 		\label{fig:nnp-imem}
 	\end{subfigure}
-	\caption{}
+	\caption{ \footnotesize forrás:\cite{Wechsler-nnpi}}
 	\label{fig:nnp-i}
 \end{figure}
 

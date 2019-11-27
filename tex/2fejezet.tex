@@ -28,7 +28,7 @@ A Google mély tanulással kapcsolatos projektjeihez saját eszközöket fejlesz
 		\caption{A kódban definiált számítási gráf}
 		\label{fig:tfcompgraph}
 	\end{subfigure}
-	\caption{Számítási gráfok TensorFlowban}
+	\caption{Számítási gráfok TensorFlowban\cite{tensorflow2015-whitepaper}}
 \end{figure}
 
 TensorFlowban a műveletek végrehajtásához műveleti csomópontokat kell definiálni, melyek egy-egy műveletet --~melyek a \verb|Operation| osztály példányai~-- valósítanak meg a számítási gráfban. Egy ilyen csomópontnak több bemenő, illetve kijövő éle lehet, melyek az átadott részszámításokat szimbolizálják --~a változók általánosan véve tenzorok a keretrendszeren belül. A \emph{Session} egységbe zárja a számításokat --~másként fogalmazva az \verb|Operation| és a \verb|Tensor| osztályok példányait~--, így a művelteket nem a gráfban implementációjában hajtódnak végre. Tehát a vezérlés külön van választva a program állapotától és a felhasználó az előbbit képes programozni. A TensorFlow új verziójában ez a megközelítés el lett rejtve, így például a \verb|outputs = session.run(f(placeholder), feed_dict={placeholder: input})| kifejezés helyett a sokkal rövidebb \verb|outputs = f(input)| használatos.
@@ -61,10 +61,9 @@ Chollet könyve részletesen bemutatja a keretrendszer használatát, továbbá 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\linewidth]{fig/keras_software_stack}
-	\caption{Keras szoftver rendszer\protect\footnotemark}
+	\caption{Kerast tartalmazó szoftver rendszer \footnotesize forrás:\cite{chollet}}
 	\label{fig:kerassoftwarestack}
 \end{figure}
-\footnotetext{Forrás:\protect\cite{chollet}}
 
 \subsection{Neurális hálózat definiálása}
 Keras-ban egy neurális hálózatot \emph{model}-nek hívunk (gyakran máshol is így neveznek egy konkrét neurális hálózatot). Egy \emph{model} létrehozásához a \verb|Keras.models| modulban definiált metódusokkal lehetséges. A keretrendszerben az adatokat tenzorokként kell reprezentálnunk, ezért érdemes a \emph{numpy}\footnote{lásd:\url{https://numpy.org/}} nevű python csomaggal együtt használni. A keretrendszer tetszőleges alakú tenzorokat képes kezelni, tehát nincs megkötés arra vonatkozóan, hogy egy réteg bemenete vektor, mátrix vagy kiterjedtebb struktúrában -- magasabb dimenziójú tenzorban -- szerepeljen. A következő kódokban szeretném szemléltetni a Keras használatának módját.
